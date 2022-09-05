@@ -1,0 +1,4 @@
+print('oi')
+print('tudo')
+print('bem')
+print('?')
