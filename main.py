@@ -1,37 +1,48 @@
-import read_source_code
+""" PRÉ ANÁLISE LEXICA """
 
-###### PRÉ ANÁLISE LEXICA
-tokens_dict = {} # adicionar aqui os tokens que vao ser do tipo ["lexema" : "classe"].
-
-reserved_words = ["feature", "none", "assign", "current", "create", "loop", "from", "until", "all", "some", "integer", "array"]
+# adicionar aqui os tokens que vao ser do tipo ["lexema" : "classe"].
 delimiters = ["(", ")", "{", "}", "[", "]", ";", ",", "<<", ">>", "do", "end"]
-operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-", "not", "*", "/", "//", "^", "and", "or", ":=", "assign", ":", "."]
+tokens_dict = {}
+reserved_words = ["feature", "none", "assign", "current", "create",
+                  "loop", "from", "until", "all", "some", "integer", "array"]
+operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-", "not",
+             "*", "/", "//", "^", "and", "or", ":=", "assign", ":", "."]
 
-##### FUNÇÕES BÁSICAS
+
+""" FUNÇÕES BÁSICAS """
+
+
+def loadSourceCode(path="code.txt"):
+    with open(path, "r") as source:
+        return source.read()
+
+
 def addNewToken(lexeme, lexeme_class):
-    for key in tokens_dict.keys(): #verifica se já existe o token no dicionario
-        if key == lexeme:
-            return
-        
+    if lexeme in tokens_dict.keys():
+        return
+
     tokens_dict[lexeme] = lexeme_class
-    print(tokens_dict)
+    # print(tokens_dict)
+
 
 def throwError(error_position, error_message):
-    print(f'An error has be found in position {error_position}.\nSee description: {error_message}')
+    print(f'An error has be found in position {error_position}.')
+    print(f'See description: {error_message}')
 
 
-##### LOOP PRINCIPAL
+""" LOOP PRINCIPAL """
+
+
 def main():
-    source_code = read_source_code.generateCodeString()    
+    source_code = loadSourceCode()
 
-    #ordem de chamada dos reconhecedores
-    commentsRecognizer()
-    delimitersRecognizer()
-    operatorsRecognizer()
-    idRecognizer() #aqui verifica-se se é uma palavra reservada
-    constantRecognizer()
+    # ordem de chamada dos reconhecedores
+    # TODO: commentsRecognizer()
+    # TODO: delimitersRecognizer()
+    # TODO: operatorsRecognizer()
+    # TODO: idRecognizer()  # aqui verifica-se se é uma palavra reservada
+    # TODO: constantRecognizer()
 
-    
 
-if __name__ == '__main__': 
-    main() 
+if __name__ == '__main__':
+    main()
