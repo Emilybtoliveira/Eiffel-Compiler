@@ -85,6 +85,26 @@ def throwError(error_position, error_message):
 
 
 # ----------------------------
+# AUTOMATOS RECONHECEDORES
+# ----------------------------
+
+
+def recognizesInteger(stack):
+    states = ["q0", "qf"]
+    sign_events = ["+", "-"]
+    digit_events = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+    meg = MEG(states, sign_events+digit_events, "q0", "qf")
+    meg.setTransitionRule("q0", sign_events+digit_events, "qf")
+    meg.setTransitionRule("qf", digit_events, "qf")
+
+    for char in stack:
+        meg.gotoNextState(char)
+
+    return meg.recognizes()
+
+
+# ----------------------------
 # LOOP PRINCIPAL
 # ----------------------------
 
@@ -97,7 +117,7 @@ def main():
     # TODO: delimitersRecognizer()
     # TODO: operatorsRecognizer()
     # TODO: idRecognizer()  # aqui verifica-se se é uma palavra reservada
-    # TODO: constantRecognizer()
+    # DONE: integerRecognizer()
 
 
 if __name__ == '__main__':
