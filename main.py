@@ -105,6 +105,16 @@ def recognizesInteger(stack):
 
 
 # ----------------------------
+# TESTES UNITARIOS
+# ----------------------------
+
+def printTest(title, tests):
+    print(f'{title}')
+    for resultKey, resultValue in tests.items():
+        print(f'    [{ "🟢" if (resultValue) else "🔴"}] {resultKey}')
+
+
+# ----------------------------
 # LOOP PRINCIPAL
 # ----------------------------
 
