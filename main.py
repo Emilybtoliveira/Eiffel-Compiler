@@ -109,9 +109,25 @@ def recognizesInteger(stack):
 # ----------------------------
 
 def printTest(title, tests):
-    print(f'{title}')
+    print(f'Unit Testing: {title}')
     for resultKey, resultValue in tests.items():
         print(f'    [{ "🟢" if (resultValue) else "🔴"}] {resultKey}')
+
+
+def testIntegerRecognizer():
+    tests = {
+        "acceptsUnsignedInt": recognizesInteger("123"),
+        "acceptsSignedPositiveInt": recognizesInteger("+123"),
+        "acceptsSignedNegativeInt": recognizesInteger("-123"),
+        "rejectsLettersInTheStart": not recognizesInteger("AB3456"),
+        "rejectsLettersInTheMiddle": not recognizesInteger("12CD56"),
+        "rejectsLettersInTheEnd": not recognizesInteger("1234EF"),
+        "rejectsSingleLetterInTheStart": not recognizesInteger("X23"),
+        "rejectsSingleLetterInTheMiddle": not recognizesInteger("1Y3"),
+        "rejectsSingleLetterInTheEnd": not recognizesInteger("12Z")
+    }
+    tests.items()
+    printTest("IntegerRecognizer", tests)
 
 
 # ----------------------------
@@ -131,4 +147,5 @@ def main():
 
 
 if __name__ == '__main__':
+    testIntegerRecognizer()
     main()
