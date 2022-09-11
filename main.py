@@ -1,6 +1,8 @@
-""" PRÉ ANÁLISE LEXICA """
+# ----------------------------
+# PRÉ ANÁLISE LEXICA
+# ----------------------------
 
-# adicionar aqui os tokens que vao ser do tipo ["lexema" : "classe"].
+
 delimiters = ["(", ")", "{", "}", "[", "]", ";", ",", "<<", ">>", "do", "end"]
 tokens_dict = {}
 reserved_words = ["feature", "none", "assign", "current", "create",
@@ -9,7 +11,59 @@ operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-", "not",
              "*", "/", "//", "^", "and", "or", ":=", "assign", ":", "."]
 
 
-""" FUNÇÕES BÁSICAS """
+# ----------------------------
+# MÁQUINA DE ESTADOS GENÉRICA
+# ----------------------------
+
+
+class MEG:
+    def __init__(self, states, events, initialState, acceptanceStates):
+        if type(acceptanceStates) != list:
+            acceptanceStates = [acceptanceStates]
+
+        self.states = states
+        self.events = events
+        self.currentState = initialState
+        self.acceptanceStates = acceptanceStates
+
+        if (initialState not in states):
+            states.append(initialState)
+
+        if ("err" not in states):
+            states.append("err")
+
+        self.transitionTable = {}
+        for state in states:
+            self.transitionTable[state] = {}
+            for event in events:
+                self.transitionTable[state][event] = "err"
+
+    def setTransitionRule(self, originState, events, targetState):
+        if ((originState not in self.states) or (targetState not in self.states)):
+            return
+
+        if (type(events) != list):
+            events = [events]
+
+        for event in events:
+            if (event in self.events):
+                self.transitionTable[originState][event] = targetState
+
+    def gotoNextState(self, event):
+        if ((event not in self.events) or (self.currentState not in self.states)):
+            self.currentState = "err"
+            return "err"
+
+        self.currentState = self.transitionTable[self.currentState][event]
+        return self.currentState
+
+    def recognizes(self):
+        return self.currentState in self.acceptanceStates
+
+
+# ----------------------------
+# FUNÇÕES BÁSICAS
+# ----------------------------
 
 
 def loadSourceCode(path="code.txt"):
@@ -30,7 +84,9 @@ def throwError(error_position, error_message):
     print(f'See description: {error_message}')
 
 
-""" LOOP PRINCIPAL """
+# ----------------------------
+# LOOP PRINCIPAL
+# ----------------------------
 
 
 def main():
