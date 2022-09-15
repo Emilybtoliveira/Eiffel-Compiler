@@ -5,7 +5,7 @@
 
 delimiters = ["(", ")", "{", "}", "[", "]", ";", ",", "<<", ">>", "do", "end"]
 tokens_dict = {}
-reserved_words = ["feature", "none", "assign", "current", "create",
+reserved_words = ["feature", "none", "assign", "current", "create", "class",
                   "loop", "from", "until", "all", "some", "integer", "array"]
 operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-", "not",
              "*", "/", "//", "^", "and", "or", ":=", "assign", ":", "."]
@@ -88,7 +88,6 @@ def throwError(error_position, error_message):
 # AUTOMATOS RECONHECEDORES
 # ----------------------------
 
-
 def recognizesInteger(stack):
     states = ["q0", "qf"]
     sign_events = ["+", "-"]
@@ -103,6 +102,15 @@ def recognizesInteger(stack):
 
     return meg.recognizes()
 
+def recognizesReserved(stack):
+    return stack in reserved_words
+
+def classifyToken(stack):
+    if(recognizesInteger(stack)):
+        return "int"
+    elif(recognizesReserved(stack)):
+        return "reserved"
+    return "id"
 
 # ----------------------------
 # TESTES UNITARIOS
@@ -126,8 +134,15 @@ def testIntegerRecognizer():
         "rejectsSingleLetterInTheMiddle": not recognizesInteger("1Y3"),
         "rejectsSingleLetterInTheEnd": not recognizesInteger("12Z")
     }
-    tests.items()
     printTest("IntegerRecognizer", tests)
+
+def testReservedRecognizer():
+    tests = {
+        "acceptsClass": recognizesReserved("class"),
+        "acceptsFeature": recognizesReserved("feature"),
+        "rejectsHello": not recognizesReserved("hello")
+    }
+    printTest("ReservedRecognizer", tests)
 
 
 # ----------------------------
@@ -148,4 +163,5 @@ def main():
 
 if __name__ == '__main__':
     testIntegerRecognizer()
+    testReservedRecognizer()
     main()
