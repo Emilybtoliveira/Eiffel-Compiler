@@ -5,7 +5,7 @@ import string
 
 delimiters = ["(", ")", "{", "}", "[", "]", ";", ",", "<<", ">>", "do", "end"]
 tokens_dict = {}
-reserved_words = ["feature", "none", "assign", "current", "create",
+reserved_words = ["feature", "none", "assign", "current", "create","class",
                   "loop", "from", "until", "all", "some", "integer", "array"]
 operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-", "not",
              "*", "/", "//", "^", "and", "or", ":=", "assign", ":", "."]
@@ -102,6 +102,16 @@ def recognizesInteger(stack):
         meg.gotoNextState(char)
 
     return meg.recognizes()
+
+def recognizesReserved(stack):
+    return stack in reserved_words
+
+def classifyToken(stack):
+    if(recognizesInteger(stack)):
+        return "int"
+    elif(recognizesReserved(stack)):
+        return "reserved"
+    return "id"
 
 def commentsRecognizer(stack):
     
@@ -304,6 +314,14 @@ def testIntegerRecognizer():
     }
     printTest("IntegerRecognizer", tests)
 
+def testReservedRecognizer():
+    tests = {
+        "acceptsClass": recognizesReserved("class"),
+        "acceptsFeature": recognizesReserved("feature"),
+        "rejectsHello": not recognizesReserved("hello")
+    }
+    printTest("ReservedRecognizer", tests)
+
 def testCommentsRecognizer():
     tests = {
         "acceptsComments":commentsRecognizer("-- 123asdad")
@@ -344,11 +362,6 @@ def main():
     # DONE: operatorsRecognizer()
     # DONE: integerRecognizer()
     
-
-
-    # op_separator("age:= integer age = -10 << tteste >>")
-    # delimiters_separators("teste age:intenger < 10 << teste >>")
-    # comments_separator("age:integer -- teste de negocio")
     frase = "age:integer a vida>10 e tem tambem () e {} e <= e ! // asd << teste >> -- tchau "
     hierarchy(frase,0)
     print(frase)
@@ -359,4 +372,5 @@ if __name__ == '__main__':
     # testIntegerRecognizer()
     # testOperatorsRecognizer()
     # testDelimitersRecognizer()
+    # testReservedRecognizer()
     main()
