@@ -171,21 +171,41 @@ def operatorsRecognizer(stack):
 
 # Separators
 
-def hierarchy(stream):
-    print(stream)
+def hierarchy(stream,level):
+    if level == 0:
+        comments_separator(stream)
+    elif level == 1:
+        op_separator(stream)
+    elif level == 2:
+        delimiters_separator(stream)
+    
+
+
+def comments_separator(stream):
+
+    # se tiver um comentario, ele vai ignorar de -- ate o fim da linha
+    word = ""
+    for index,char in enumerate(stream):
+        if index!=(len(stream)-1):
+            combination = char+stream[index+1]
+            if commentsRecognizer(combination):
+                # reconheceu, lgo descarta o resto
+                word = stream[0:index]
+                break
+
+    hierarchy(word,1)
+    
 
 def op_separator(stream):
+    # operator ta comendo o << e >> quando manda pra o delimiter
+    
     index = 0
     word = ""
     while index!=len(stream):
-        # Enquanto nao terminar a stream
-        # TODO: erro na parte de << e >>
+
         char = stream[index]
         if operatorsRecognizer(char):
             # reconheceu, testar para o proximo
-            
-            # talvez tenha que fazer o esquema de ver se ta como operador e testar o proximo
-            
             operatorLexeme = char
             if index != len(stream)-1:
                 
@@ -193,29 +213,70 @@ def op_separator(stream):
             
                 if operatorsRecognizer(nextCharStream):
                     # operator composto
-                    # aqui o autamto tem que saber reconhecer um // e nao um /-
-                    # falando que // eh valdio e /- nao é
-            
                     operatorLexeme = nextCharStream
                     index+=1
-                    
+
+                elif delimitersRecognizer(nextCharStream):
+                    # eh um delimitador, nao aceitar
+                        operatorLexeme = ""
+                        word+=nextCharStream
+                        index+=1
+                        
+
             # mandar para a hierarquia o que ele ja achou
-            addNewToken(operatorLexeme,"opr")
-            operatorLexeme = ""
+            if operatorLexeme != "":
+                addNewToken(operatorLexeme,"opr")
+                operatorLexeme = ""
+            
+            hierarchy(word,2)
             index+=1
-            hierarchy(word)
             word = ""
 
         else:
             # nao reconheceu o atual, continua procurando
             # ja vem sem os comentarios e espaço em branco
-            
             word+=char
-            
             index+=1
 
-    print(tokens_dict)
+    
 
+def delimiters_separator(stream):
+    
+    index = 0
+    word = ""
+    while index!=len(stream):
+        
+        char = stream[index]
+        
+        if char in ["<",">"]:
+            
+            # reconheceu, testar para o proximo
+            delimiterLexeme = char
+            
+            if index != len(stream)-1:
+                
+                nextCharStream = char+stream[index+1]
+            
+                if delimitersRecognizer(nextCharStream):
+                    # delimiter composto
+                    delimiterLexeme = nextCharStream
+                    index+=1
+                    addNewToken(delimiterLexeme,"del")
+            
+                    # se nao for, é simples, logo, nao é delimitador
+            
+            delimiterLexeme = ""
+            index+=1
+            hierarchy(word,3)
+            word = ""
+        elif char in delimiters:
+            index+=1
+            addNewToken(char,"del")
+        else:
+            # nao reconheceu o atual, continua procurando
+            # ja vem sem os comentarios e espaço em branco
+            word+=char
+            index+=1
 
 
 # ----------------------------
@@ -251,9 +312,11 @@ def testCommentsRecognizer():
 
 def testDelimitersRecognizer():
     tests = {
-        "acceptsDelimiters":delimitersRecognizer(">>")
+        "acceptsDelimitersSingle":delimitersRecognizer(">"),
+        "acceptsDelimitersDouble":delimitersRecognizer(">>"),
+        "acceptsDelimitersWrong":delimitersRecognizer("\s")
     }
-    printTest("CommentsRecognizer",tests)
+    printTest("DelimitersRecognizer",tests)
     
 
 def testOperatorsRecognizer():
@@ -266,9 +329,6 @@ def testOperatorsRecognizer():
     printTest("CommentsRecognizer",tests)
     
 
-
-
-
 # ----------------------------
 # LOOP PRINCIPAL
 # ----------------------------
@@ -278,16 +338,25 @@ def main():
     source_code = loadSourceCode()
     
     # ordem de chamada dos reconhecedores
-    # TODO: commentsRecognizer()
-    # TODO: delimitersRecognizer()
-    # TODO: operatorsRecognizer()
     # TODO: idRecognizer()  # aqui verifica-se se é uma palavra reservada
+    # DONE: delimitersRecognizer()
+    # DONE: commentsRecognizer()
+    # DONE: operatorsRecognizer()
     # DONE: integerRecognizer()
+    
 
-    op_separator("age:= integer age = -10 << tteste >>")
+
+    # op_separator("age:= integer age = -10 << tteste >>")
+    # delimiters_separators("teste age:intenger < 10 << teste >>")
+    # comments_separator("age:integer -- teste de negocio")
+    frase = "age:integer a vida>10 e tem tambem () e {} e <= e ! // asd << teste >> -- tchau "
+    hierarchy(frase,0)
+    print(frase)
+    print(tokens_dict)
 
 
 if __name__ == '__main__':
-    testIntegerRecognizer()
-    testOperatorsRecognizer()
+    # testIntegerRecognizer()
+    # testOperatorsRecognizer()
+    # testDelimitersRecognizer()
     main()
