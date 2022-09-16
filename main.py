@@ -286,8 +286,8 @@ def delimiters_separator(stream):
 def printTest(title, tests):
     print(f'Unit Testing: {title}')
     for resultKey, resultValue in tests.items():
-        # print(f'    [{ "🟢" if (resultValue) else "🔴"}] {resultKey}')
-        print(f'    [{ "R" if (resultValue) else "F"}] {resultKey}')
+        print(f'    [{ "🟢" if (resultValue) else "🔴"}] {resultKey}')
+        
 
 
 def testIntegerRecognizer():
