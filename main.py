@@ -2,6 +2,7 @@
 # PRÉ ANÁLISE LEXICA
 # ----------------------------
 import string
+import argparse
 
 delimiters = ["(", ")", "{", "}", "[", "]", ";", ",", "<<", ">>", "do", "end"]
 tokens_dict = {}
@@ -338,21 +339,21 @@ def testCommentsRecognizer():
 
 def testDelimitersRecognizer():
     tests = {
-        "acceptsDelimitersSingle": delimitersRecognizer(">"),
-        "acceptsDelimitersDouble": delimitersRecognizer(">>"),
-        "acceptsDelimitersWrong": delimitersRecognizer("\s")
+        "acceptsDelimiter \">\"": delimitersRecognizer(">"),
+        "acceptsDelimiter \">>\"": delimitersRecognizer(">>"),
+        "rejectsInvalidDelimiter \"\s\"": not delimitersRecognizer("\s")
     }
     printTest("DelimitersRecognizer", tests)
 
 
 def testOperatorsRecognizer():
     tests = {
-        "acceptsOperatorsTwoRight": operatorsRecognizer("//"),
-        "acceptsOperatorsTwoWrong": operatorsRecognizer("/-"),
-        "acceptsOperatorsTwoWrong2": operatorsRecognizer("/a"),
-        "acceptsOperators": operatorsRecognizer(">>")
+        "acceptsOperator \"//\"": operatorsRecognizer("//"),
+        "rejectsInvalidOperator \">>\"": not operatorsRecognizer(">>"),
+        "rejectsInvalidOperator \"/-\"": not operatorsRecognizer("/-"),
+        "rejectsInvalidOperator \"/a\"": not operatorsRecognizer("/a"),
     }
-    printTest("CommentsRecognizer", tests)
+    printTest("OperatorsRecognizer", tests)
 
 
 # ----------------------------
@@ -360,18 +361,52 @@ def testOperatorsRecognizer():
 # ----------------------------
 
 
-def main():
-    source_code = loadSourceCode()
-    lines = source_code.split("\n")
+def main(input):
+    try:
+        source_code = loadSourceCode(input)
+    except:
+        print("\nErro: Não foi possível ler o arquivo selecionado.\n"
+              + "      Verifique se o caminho está correto...\n")
+    else:
+        lines = source_code.split("\n")
 
-    for line in lines:
-        hierarchy(line, 0)
-    print(tokens_dict)
+        for line in lines:
+            hierarchy(line, 0)
+        print(tokens_dict)
 
 
 if __name__ == '__main__':
-    # testIntegerRecognizer()
-    # testOperatorsRecognizer()
-    # testDelimitersRecognizer()
-    # testReservedRecognizer()
-    main()
+    parser = argparse.ArgumentParser(
+        description='            Analisador Léxico de BNF Resumida\n'
+        + '    Apresentado a Profa. Roberta Vilhena em 19/09/2022\n'
+        + '        Disciplina 2022.1 - COMP379 - COMPILADORES\n'
+        + '                     Linguagem Eiffel\n\n'
+        + '    Por: Emily B. T. Oliveira, \n'
+        + '         Felipe F. Vasconcelos, \n'
+        + '         Taígo I. M. Pedrosa\n',
+        formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-i', '--input', metavar='INPUT', dest='input',
+                        help='Sets the input file\'s path.\n'
+                        + 'If input isn\'t set, it will be requested interactively.')
+    parser.add_argument('--unit-testing', dest='test', action='store_true',
+                        help='Runs unit tests and returns.\n')
+    args = parser.parse_args()
+
+    if(args.test):
+        testCommentsRecognizer()
+        testOperatorsRecognizer()
+        testDelimitersRecognizer()
+        testIntegerRecognizer()
+        testReservedRecognizer()
+        exit()
+
+    if(not args.input):
+        prompt = input("\nPath: ")
+        if(prompt != ""):
+            args.input = prompt
+        else:
+            args.input = "code.txt"
+            print(f'No path provided, using default ./{args.input}\n')
+
+    print(args)
+    main(input=args.input)
