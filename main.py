@@ -339,8 +339,8 @@ def testCommentsRecognizer():
 
 def testDelimitersRecognizer():
     tests = {
-        "acceptsDelimiter \">\"": delimitersRecognizer(">"),
         "acceptsDelimiter \">>\"": delimitersRecognizer(">>"),
+        "rejectsInvalidDelimiter \">\"": not delimitersRecognizer(">"),
         "rejectsInvalidDelimiter \"\s\"": not delimitersRecognizer("\s")
     }
     printTest("DelimitersRecognizer", tests)
