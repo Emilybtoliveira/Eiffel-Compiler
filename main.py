@@ -4,12 +4,12 @@
 import string
 import argparse
 
-delimiters = ["(", ")", "{", "}", "[", "]", ";", ",", "<<", ">>", "do", "end"]
+delimiters = ["(", ")", "{", "}", "[", "]", ";", ",", "<<", ">>"]
 tokens_dict = {}
 reserved_words = ["feature", "none", "assign", "current", "create", "class",
-                  "loop", "from", "until", "all", "some", "integer", "array"]
-operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-", "not",
-             "*", "/", "//", "^", "and", "or", ":=", "assign", ":", "."]
+                  "loop", "from", "until", "all", "some", "integer", "array","do","end","not","and","assign","or","print"]
+operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-", 
+             "*", "/", "//", "^", ":=", ":", "."]
 
 
 # ----------------------------
@@ -193,8 +193,8 @@ def hierarchy(stream, level):
     elif level == 2:
         delimiters_separator(stream)
     elif level == 3:
+        
         classifiesToken(stream)
-
 
 def comments_separator(stream):
 
@@ -211,7 +211,9 @@ def comments_separator(stream):
                 word += char
         else:
             word += char
-    hierarchy(word, 1)
+
+    if word!="":
+        hierarchy(word, 1)
 
 
 def op_separator(stream):
@@ -254,7 +256,10 @@ def op_separator(stream):
             # ja vem sem os comentarios e espaço em branco
             word += char
             index += 1
-    hierarchy(word, 2)
+
+    if word!="":
+        hierarchy(word, 2)
+
 
 
 def delimiters_separator(stream):
@@ -289,12 +294,17 @@ def delimiters_separator(stream):
         elif char in delimiters:
             index += 1
             addNewToken(char, "del")
+            hierarchy(word,3)
+            word=""
         else:
             # nao reconheceu o atual, continua procurando
             # ja vem sem os comentarios e espaço em branco
             word += char
             index += 1
-
+    
+    
+    if word!="":
+        hierarchy(word,3)
 # ----------------------------
 # TESTES UNITARIOS
 # ----------------------------
@@ -368,9 +378,10 @@ def main(input):
         print("\nErro: Não foi possível ler o arquivo selecionado.\n"
               + "      Verifique se o caminho está correto...\n")
     else:
-        lines = source_code.split("\n")
+        lines = source_code.replace(" ", "").split("\n")
 
         for line in lines:
+            print(line)
             hierarchy(line, 0)
         print(tokens_dict)
 

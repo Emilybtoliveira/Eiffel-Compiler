@@ -1,3 +1,14 @@
-print(oi) --c1
-print(tudo) >= print(bem) -- c2
-print(?)
+class
+    APPLICATION
+
+create
+    make
+
+feature {NONE} -- Initialization
+    make
+            -- Create and retrieve an environment variable.
+        do
+            put (HelloWorld!, MY_VARIABLE)
+            print (get(MY_VARIABLE))
+        end
+end
