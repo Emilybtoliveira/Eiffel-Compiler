@@ -1,10 +1,8 @@
 # ----------------------------
 # PRÉ ANÁLISE LEXICA
 # ----------------------------
-from re import S
 import string
 import argparse
-from turtle import position
 
 colors = {"reserved": "\u001b[38;5;135m",
           "id":       "\u001b[38;5;81m",
@@ -99,16 +97,16 @@ def printHighlighted(string, all_tokens, colors):
     word = ""
     position = 0
     for char in string:
-        if(char == "\n" or char == " "):
+        if (char == "\n" or char == " "):
             print(char, end="")
-        elif(char+string[position-1] in ["<<", ">>", "/=", "<=", ">=", "//", ":="]):
-            print(colors[tokens[word]], word, "\033[0m", end="", sep="")
-            word = ""
+        elif (position+1 < lenString and char+string[position+1] in ["<<", ">>", "/=", "<=", ">=", "//", ":="]):
+            #print(colors[tokens[word]], word, "\033[0m", end="", sep="")
+            word += char
             continue
         else:
             word += char
 
-        if(word in tokens):
+        if (word in tokens):
             if tokens[word] not in colors.keys():
                 print(colors[tokens[tokens[word]]],
                       tokens[word], "\033[0m", end="", sep="")
@@ -117,6 +115,7 @@ def printHighlighted(string, all_tokens, colors):
                       "\033[0m", end="", sep="")
             word = ""
         position += 1
+    print("\n")
 
 
 def loadSourceCode(path="code.txt"):
@@ -161,9 +160,9 @@ def recognizesReserved(stack):
 
 
 def classifiesToken(stack):
-    if(recognizesInteger(stack)):
+    if (recognizesInteger(stack)):
         addNewToken(stack, "int")
-    elif(recognizesReserved(stack)):
+    elif (recognizesReserved(stack)):
         addNewToken(stack, "reserved")
     else:
         addNewToken(stack, "id")
@@ -458,7 +457,7 @@ if __name__ == '__main__':
                         help='Runs unit tests and returns.\n')
     args = parser.parse_args()
 
-    if(args.test):
+    if (args.test):
         testCommentsRecognizer()
         testOperatorsRecognizer()
         testDelimitersRecognizer()
@@ -466,9 +465,9 @@ if __name__ == '__main__':
         testReservedRecognizer()
         exit()
 
-    if(not args.input):
+    if (not args.input):
         prompt = input("\nPath: ")
-        if(prompt != ""):
+        if (prompt != ""):
             args.input = prompt
         else:
             args.input = "code.txt"
