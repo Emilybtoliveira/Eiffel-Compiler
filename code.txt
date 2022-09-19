@@ -1,14 +1,19 @@
 class
-    APPLICATION
+    BAKERY
 
-create
-    make
+feature
+    
+    number_of_cakes : INTEGER
+        -- A variable containing an integer
 
-feature {NONE} -- Initialization
-    make
-            -- Create and retrieve an environment variable.
+    buy_cake (amount : INTEGER, price : INTEGER)   -- A function accepting arguments
         do
-            put (HelloWorld!, MY_VARIABLE)
-            print (get(MY_VARIABLE))
+            -- Some code here...
         end
+
+    is_cake_available : BOOLEAN   -- A function returning true or false 
+        do
+            Result := number_of_cakes > 0
+        end
+
 end

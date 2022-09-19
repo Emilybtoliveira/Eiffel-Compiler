@@ -1,14 +1,22 @@
 # ----------------------------
 # PRÉ ANÁLISE LEXICA
 # ----------------------------
+from re import S
 import string
 import argparse
+from turtle import position
 
+colors = {"reserved": "\u001b[38;5;135m",
+          "id":       "\u001b[38;5;81m",
+          "comment":  "\u001b[38;5;106m",
+          "del":      "\u001b[38;5;220m",
+          "opr":      "\u001b[38;5;231m",
+          "int":      "\u001b[38;5;157m"}
 delimiters = ["(", ")", "{", "}", "[", "]", ";", ",", "<<", ">>"]
 tokens_dict = {}
-reserved_words = ["feature", "none", "assign", "current", "create", "class",
-                  "loop", "from", "until", "all", "some", "integer", "array","do","end","not","and","assign","or","print"]
-operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-", 
+reserved_words = ["feature", "none", "assign", "current", "create", "class", "integer",
+                  "loop", "from", "until", "all", "some", "array", "do", "end", "not", "and", "assign", "or", "print"]
+operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-",
              "*", "/", "//", "^", ":=", ":", "."]
 
 
@@ -66,6 +74,50 @@ class MEG:
 # FUNÇÕES BÁSICAS
 # ----------------------------
 
+def printTokens():
+    tokens = list(tokens_dict.keys())
+    tokens.sort()
+    for token in tokens:
+        print(colors[tokens_dict[token]], token, " : ",
+              tokens_dict[token], "\033[0m", sep="")
+
+
+def printHighlighted(string, all_tokens, colors):
+    print("\n\nHighlighting:",
+          f"{colors['reserved']} reserved,\033[0m"
+          f"{colors['id']} identifier,\033[0m"
+          f"{colors['comment']} comment,\033[0m"
+          f"{colors['del']} delimiter,\033[0m"
+          f"{colors['opr']} operator\033[0m\n")
+
+    tokens = {}
+    for token, value in all_tokens.items():
+        tokens[token.replace(" ", "")] = token
+        tokens[token] = value
+
+    lenString = len(string)
+    word = ""
+    position = 0
+    for char in string:
+        if(char == "\n" or char == " "):
+            print(char, end="")
+        elif(char+string[position-1] in ["<<", ">>", "/=", "<=", ">=", "//", ":="]):
+            print(colors[tokens[word]], word, "\033[0m", end="", sep="")
+            word = ""
+            continue
+        else:
+            word += char
+
+        if(word in tokens):
+            if tokens[word] not in colors.keys():
+                print(colors[tokens[tokens[word]]],
+                      tokens[word], "\033[0m", end="", sep="")
+            else:
+                print(colors[tokens[word]], word,
+                      "\033[0m", end="", sep="")
+            word = ""
+        position += 1
+
 
 def loadSourceCode(path="code.txt"):
     with open(path, "r") as source:
@@ -105,7 +157,7 @@ def recognizesInteger(stack):
 
 
 def recognizesReserved(stack):
-    return stack in reserved_words
+    return str(stack).lower() in reserved_words
 
 
 def classifiesToken(stack):
@@ -193,8 +245,9 @@ def hierarchy(stream, level):
     elif level == 2:
         delimiters_separator(stream)
     elif level == 3:
-        
+
         classifiesToken(stream)
+
 
 def comments_separator(stream):
 
@@ -205,6 +258,7 @@ def comments_separator(stream):
             combination = char+stream[index+1]
             if commentsRecognizer(combination):
                 # reconheceu, lgo descarta o resto
+                addNewToken(stream[index:], "comment")
                 word = stream[0:index]
                 break
             else:
@@ -212,12 +266,13 @@ def comments_separator(stream):
         else:
             word += char
 
-    if word!="":
+    if word != "":
         hierarchy(word, 1)
 
 
 def op_separator(stream):
     # operator ta comendo o << e >> quando manda pra o delimiter
+    stream = str(stream).replace(" ", "")
 
     index = 0
     word = ""
@@ -257,9 +312,8 @@ def op_separator(stream):
             word += char
             index += 1
 
-    if word!="":
+    if word != "":
         hierarchy(word, 2)
-
 
 
 def delimiters_separator(stream):
@@ -294,17 +348,16 @@ def delimiters_separator(stream):
         elif char in delimiters:
             index += 1
             addNewToken(char, "del")
-            hierarchy(word,3)
-            word=""
+            hierarchy(word, 3)
+            word = ""
         else:
             # nao reconheceu o atual, continua procurando
             # ja vem sem os comentarios e espaço em branco
             word += char
             index += 1
-    
-    
-    if word!="":
-        hierarchy(word,3)
+
+    if word != "":
+        hierarchy(word, 3)
 # ----------------------------
 # TESTES UNITARIOS
 # ----------------------------
@@ -378,12 +431,14 @@ def main(input):
         print("\nErro: Não foi possível ler o arquivo selecionado.\n"
               + "      Verifique se o caminho está correto...\n")
     else:
-        lines = source_code.replace(" ", "").split("\n")
+        lines = source_code.split("\n")
 
         for line in lines:
-            print(line)
+            # print(line)
             hierarchy(line, 0)
-        print(tokens_dict)
+
+        printTokens()
+        printHighlighted(source_code, tokens_dict, colors)
 
 
 if __name__ == '__main__':
@@ -419,5 +474,4 @@ if __name__ == '__main__':
             args.input = "code.txt"
             print(f'No path provided, using default ./{args.input}\n')
 
-    print(args)
     main(input=args.input)
