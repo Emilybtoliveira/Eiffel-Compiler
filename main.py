@@ -3,6 +3,7 @@
 # ----------------------------
 import string
 import argparse
+from dataclasses import dataclass
 
 colors = {"reserved": "\u001b[38;5;135m",
           "id":       "\u001b[38;5;81m",
@@ -10,12 +11,20 @@ colors = {"reserved": "\u001b[38;5;135m",
           "del":      "\u001b[38;5;220m",
           "opr":      "\u001b[38;5;231m",
           "int":      "\u001b[38;5;157m"}
-delimiters = ["(", ")", "{", "}", "[", "]", ";", ",", "<<", ">>"]
-tokens_dict = {}
-reserved_words = ["feature", "none", "assign", "current", "create", "class", "integer",
-                  "loop", "from", "until", "all", "some", "array", "do", "end", "not", "and", "assign", "or", "print"]
+delimiters = ["(", ")", "{", "}", "[", "]", ",", "<<", ">>"]
+tokens_dict = {} #obsoleto, remover!!!!!
+tokens_list = []
+reserved_words = ["feature", "create", "class", "integer",
+                  "loop", "from", "until", "array", "do", "end", "not", "and", "or", "if",
+                  "then", "else"]
 operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-",
              "*", "/", "//", "^", ":=", ":", "."]
+
+
+@dataclass
+class Token:
+    lexeme: string
+    lexeme_class: string
 
 
 # ----------------------------
@@ -73,11 +82,14 @@ class MEG:
 # ----------------------------
 
 def printTokens():
-    tokens = list(tokens_dict.keys())
+    """ tokens = list(tokens_dict.keys())
     tokens.sort()
     for token in tokens:
         print(colors[tokens_dict[token]], token, " : ",
-              tokens_dict[token], "\033[0m", sep="")
+              tokens_dict[token], "\033[0m", sep="") """
+
+    for token in tokens_list:
+        print(token)
 
 
 def printHighlighted(string, all_tokens, colors):
@@ -96,6 +108,7 @@ def printHighlighted(string, all_tokens, colors):
     lenString = len(string)
     word = ""
     position = 0
+    print(tokens)
     for char in string:
         if (char == "\n" or char == " "):
             print(char, end="")
@@ -105,7 +118,7 @@ def printHighlighted(string, all_tokens, colors):
             continue
         else:
             word += char
-
+        
         if (word in tokens):
             if tokens[word] not in colors.keys():
                 print(colors[tokens[tokens[word]]],
@@ -124,10 +137,13 @@ def loadSourceCode(path="code.txt"):
 
 
 def addNewToken(lexeme, lexeme_class):
-    if lexeme in tokens_dict.keys():
+    """ if lexeme in tokens_dict.keys():
         return
 
-    tokens_dict[lexeme] = lexeme_class
+    tokens_dict[lexeme] = lexeme_class """
+
+    new_token = Token(lexeme, lexeme_class)
+    tokens_list.append(new_token)
 
 
 def throwError(error_position, error_message):
@@ -160,12 +176,19 @@ def recognizesReserved(stack):
 
 
 def classifiesToken(stack):
+    #print(stack)
+
     if (recognizesInteger(stack)):
         addNewToken(stack, "int")
     elif (recognizesReserved(stack)):
         addNewToken(stack, "reserved")
     else:
-        addNewToken(stack, "id")
+        if stack.isalnum():
+            if stack[0].isalpha():
+                addNewToken(stack, "id")
+                return
+        
+        throwError(stack, "Palavra não reconhecida.")
 
 
 def commentsRecognizer(stack):
@@ -244,7 +267,6 @@ def hierarchy(stream, level):
     elif level == 2:
         delimiters_separator(stream)
     elif level == 3:
-
         classifiesToken(stream)
 
 
@@ -437,7 +459,7 @@ def main(input):
             hierarchy(line, 0)
 
         printTokens()
-        printHighlighted(source_code, tokens_dict, colors)
+        #printHighlighted(source_code, tokens_dict, colors)
 
 
 if __name__ == '__main__':
