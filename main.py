@@ -3,7 +3,7 @@
 # ----------------------------
 import string
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 colors = {"reserved": "\u001b[38;5;135m",
           "id":       "\u001b[38;5;81m",
@@ -164,7 +164,8 @@ def recognizesInteger(stack):
     meg = MEG(states, sign_events+digit_events, "q0", "qf")
     meg.setTransitionRule("q0", sign_events+digit_events, "qf")
     meg.setTransitionRule("qf", digit_events, "qf")
-
+    stack = stack.replace(" ","")
+    
     for char in stack:
         meg.gotoNextState(char)
 
@@ -176,19 +177,26 @@ def recognizesReserved(stack):
 
 
 def classifiesToken(stack):
-    #print(stack)
+    # print(stack)
+    
+    listaStack = stack.split(" ")
+    listaStack = [x for x in listaStack if x!= ""]
 
-    if (recognizesInteger(stack)):
-        addNewToken(stack, "int")
-    elif (recognizesReserved(stack)):
-        addNewToken(stack, "reserved")
-    else:
-        if stack.isalnum():
-            if stack[0].isalpha():
-                addNewToken(stack, "id")
-                return
-        
-        throwError(stack, "Palavra não reconhecida.")
+
+    for tkn in listaStack:
+        tkn = tkn.replace(" ","")
+        if (recognizesInteger(tkn)):
+            
+            addNewToken(tkn, "int")
+        elif (recognizesReserved(tkn)):
+            addNewToken(tkn, "reserved")
+        else:
+            if tkn.isalnum():
+                if tkn[0].isalpha():
+                    addNewToken(tkn, "id")
+                    return
+            if tkn!=" ":
+                throwError(tkn, "Palavra não reconhecida.")
 
 
 def commentsRecognizer(stack):
@@ -271,7 +279,9 @@ def hierarchy(stream, level):
 
 
 def comments_separator(stream):
-
+    
+    stream = stream.lstrip()
+    
     # se tiver um comentario, ele vai ignorar de -- ate o fim da linha
     word = ""
     for index, char in enumerate(stream):
@@ -288,17 +298,18 @@ def comments_separator(stream):
             word += char
 
     if word != "":
+        # print(word)
         hierarchy(word, 1)
 
 
 def op_separator(stream):
     # operator ta comendo o << e >> quando manda pra o delimiter
-    stream = str(stream).replace(" ", "")
+    # print(stream)
+    # stream = str(stream).replace(" ", "")
 
     index = 0
     word = ""
     while index != len(stream):
-
         char = stream[index]
         if operatorsRecognizer(char):
             # reconheceu, testar para o proximo
@@ -320,9 +331,10 @@ def op_separator(stream):
 
             # mandar para a hierarquia o que ele ja achou
             if operatorLexeme != "":
+                
                 addNewToken(operatorLexeme, "opr")
                 operatorLexeme = ""
-
+            # print(word)
             hierarchy(word, 2)
             index += 1
             word = ""
@@ -378,6 +390,7 @@ def delimiters_separator(stream):
             index += 1
 
     if word != "":
+        
         hierarchy(word, 3)
 # ----------------------------
 # TESTES UNITARIOS
