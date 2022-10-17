@@ -1,19 +1,8 @@
-class
-    BAKERY
+    balance: INTEGER
+    minimumBalance: INTEGER = 1000
 
-feature
-    
-    number_of_cakes : INTEGER
-        -- A variable containing an integer
-
-    buy_cake (amount : INTEGER, price : INTEGER)   -- A function accepting arguments
+    open (who: PERSON, sla: ALGO)
         do
-            -- Some code here...
+            owner := who
+            squares := ARRAY [INTEGER] <<1, 4, 9, 16, 25>>
         end
-
-    is_cake_available : BOOLEAN   -- A function returning true or false 
-        do
-            Result := number_of_cakes > 0
-        end
-
-end

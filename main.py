@@ -4,6 +4,7 @@
 import string
 import argparse
 from dataclasses import dataclass, replace
+from attr import field
 
 colors = {"reserved": "\u001b[38;5;135m",
           "id":       "\u001b[38;5;81m",
@@ -25,7 +26,11 @@ operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-",
 class Token:
     lexeme: string
     lexeme_class: string
+    ordemTkn : int = 0 
+    sort_index = int = field(init=False)
 
+    def __post__init__(self):
+        self.sort_index = self.ordemTkn
 
 # ----------------------------
 # MÁQUINA DE ESTADOS GENÉRICA
@@ -177,11 +182,9 @@ def recognizesReserved(stack):
 
 
 def classifiesToken(stack):
-    # print(stack)
     
     listaStack = stack.split(" ")
     listaStack = [x for x in listaStack if x!= ""]
-
 
     for tkn in listaStack:
         tkn = tkn.replace(" ","")
@@ -298,15 +301,13 @@ def comments_separator(stream):
             word += char
 
     if word != "":
-        # print(word)
+
         hierarchy(word, 1)
 
 
 def op_separator(stream):
-    # operator ta comendo o << e >> quando manda pra o delimiter
+    
     # print(stream)
-    # stream = str(stream).replace(" ", "")
-
     index = 0
     word = ""
     while index != len(stream):
@@ -331,6 +332,7 @@ def op_separator(stream):
 
             # mandar para a hierarquia o que ele ja achou
             if operatorLexeme != "":
+                # achar aqui a posicao dele na linha
                 
                 addNewToken(operatorLexeme, "opr")
                 operatorLexeme = ""
@@ -351,6 +353,7 @@ def op_separator(stream):
 
 def delimiters_separator(stream):
 
+    print(stream)
     index = 0
     word = ""
     while index != len(stream):
@@ -392,6 +395,9 @@ def delimiters_separator(stream):
     if word != "":
         
         hierarchy(word, 3)
+
+
+    
 # ----------------------------
 # TESTES UNITARIOS
 # ----------------------------
@@ -458,20 +464,90 @@ def testOperatorsRecognizer():
 # ----------------------------
 
 
+def ordenacaoTokens(source_code, qntTokensLinha):
+    print(qntTokensLinha)
+    print(f"Sum: {sum(qntTokensLinha)}")
+    
+    lines = source_code.split("\n")
+    cont = 0
+    ordemGeral = 0
+
+    for texto in lines:
+        soma = sum(qntTokensLinha[0:cont])
+        print(f"Soma: {soma}, Cont = {cont}")
+        print(texto)
+        nextItem = soma+qntTokensLinha[cont]
+        lista = [x.lexeme for x in tokens_list[soma:nextItem]] # listaLex é o de tokens
+        
+        print(qntTokensLinha[cont])
+        if qntTokensLinha[cont]!=0:
+            newList = [0 for x in range(qntTokensLinha[cont])]
+            
+            word = ""
+            contador = 0
+            ordem = 0
+            qntRem = 0
+            while len(texto)!=contador:
+                char = texto[contador]
+                word+=char
+                if word.replace(" ","") in lista:
+                    word = word.replace(" ","")
+                    if word in [">","<"]:
+                        # checar aqui apra os operadores compostos
+                        if texto[contador+1]==">":
+                            word+=">"
+                        elif texto[contador+1]=="<":    
+                            word+="<"
+
+                        contador+=1
+                    indexn = lista.index(word)+qntRem
+                    # print(f"palavra: {word}, ordem = {ordem}, index = {indexn}")
+                    
+                    tokens_list[indexn].ordemTkn = ordemGeral
+                    print(f" newList = {newList} ordem = {ordem}")
+                    newList[ordem] = word
+                    if lista.count(word)>1:
+                        del lista[indexn]
+                        qntRem+=1
+                    
+                    ordemGeral+=1
+                    ordem+=1
+                    word = ""
+                    contador+=1
+                else:
+                    contador+=1
+            else:
+                cont+=1
+
+    print(tokens_list)
+
+def ordenacaotokensorting(e):
+    return e.ordemTkn
+
+
 def main(input):
     try:
         source_code = loadSourceCode(input)
     except:
         print("\nErro: Não foi possível ler o arquivo selecionado.\n"
-              + "      Verifique se o caminho está correto...\n")
+              + "      Verifique se o caminho está correto...\n ")
     else:
         lines = source_code.split("\n")
-
+        qntTokensLinha = []
+        qntAntiga = 0
+        
+        cont = 0
+        
         for line in lines:
             # print(line)
             hierarchy(line, 0)
+            qntTokensLinha.append(len(tokens_list)-qntAntiga)
+            qntAntiga = len(tokens_list)
+            
 
-        printTokens()
+        ordenacaoTokens(source_code,qntTokensLinha)
+        # printTokens()
+
         #printHighlighted(source_code, tokens_dict, colors)
 
 
