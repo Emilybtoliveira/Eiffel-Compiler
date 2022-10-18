@@ -3,8 +3,8 @@
 # ----------------------------
 import string
 import argparse
-from dataclasses import dataclass, replace
-from attr import field
+from dataclasses import dataclass, field
+
 
 colors = {"reserved": "\u001b[38;5;135m",
           "id":       "\u001b[38;5;81m",
@@ -22,14 +22,14 @@ operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-",
              "*", "/", "//", "^", ":=", ":", "."]
 
 
-@dataclass
+@dataclass(order=True)
 class Token:
+    sort_index : int = field(init=False)
     lexeme: string
     lexeme_class: string
     ordemTkn : int = 0 
-    sort_index = int = field(init=False)
 
-    def __post__init__(self):
+    def __post_init__(self):
         self.sort_index = self.ordemTkn
 
 # ----------------------------
@@ -463,7 +463,6 @@ def testOperatorsRecognizer():
 # LOOP PRINCIPAL
 # ----------------------------
 
-
 def ordenacaoTokens(source_code, qntTokensLinha):
     print(qntTokensLinha)
     print(f"Sum: {sum(qntTokensLinha)}")
@@ -476,16 +475,16 @@ def ordenacaoTokens(source_code, qntTokensLinha):
         
         soma = sum(qntTokensLinha[0:cont])
         # [3, 5, 0, 10, 1, 3, 17, 1]
-        print(f"Soma: {soma}, Cont = {cont}")
+        # print(f"Soma: {soma}, Cont = {cont}")
         print(texto)
         nextItem = soma+qntTokensLinha[cont]
         listaindicesOrg = [ind+soma for ind,x in enumerate(tokens_list[soma:nextItem])]
-        print(listaindicesOrg)
+        # print(listaindicesOrg)
         lista = [x.lexeme for x in tokens_list[soma:nextItem]] # listaLex é o de tokens JUNTO COM AQUI O ERRO!
         # passar o lexeme e o indice original!
         # o index aqui é diferente do index de tokenslist!
-        print(lista)
-        print(qntTokensLinha[cont])
+        # print(lista)
+        # print(qntTokensLinha[cont])
         if qntTokensLinha[cont]!=0:
             newList = [0 for x in range(qntTokensLinha[cont])]
             
@@ -493,14 +492,14 @@ def ordenacaoTokens(source_code, qntTokensLinha):
             contador = 0
             ordem = 0
             
-            while len(texto)!=contador+1:
+            while len(texto)!=contador:
                 char = texto[contador]
                 word+=char
 
                 if word.replace(" ","") in lista:
                     # print(word)
                     word = word.replace(" ","")
-                    if word in [">","<"]:
+                    if word in [">","<"]: # checar aqui a questao dos numeros, erro em "16" ele reconhece o 1 e pula o 6
                         # checar aqui apra os operadores compostos
                         if texto[contador+1]==">":
                             word+=">"
@@ -508,14 +507,25 @@ def ordenacaoTokens(source_code, qntTokensLinha):
                             word+="<"
 
                         contador+=1
-                    indexn = lista.index(word) # erro ta aqui!!
+                    elif word.isdigit():
+                        # checar para o proximo
+                        try:
+                            if texto[contador+1].isdigit():
+                                word+=texto[contador+1]
+                                contador+=1
+                        except IndexError:
+                            pass
+                        
+                    indexn = lista.index(word) 
                     indexn = listaindicesOrg[indexn]
                     
                     # checar para o proximo index ate que nao exista mais!
                     
                     tokens_list[indexn].ordemTkn = ordemGeral
-                    print(f"word = {word} , indexn = {indexn},  tokensList = {tokens_list[indexn].ordemTkn} token = {tokens_list[indexn]}")
                     newList[ordem] = word
+                    print(f"word = {word} , indexn = {indexn},  tokensList = {tokens_list[indexn].ordemTkn} token = {tokens_list[indexn]}")
+                    # erro está aqui, quando eu passo o indice  
+                    # o erro está apenas nos que nao apareem, logo eles assumem indice 0.
                     # print(f"palavra: {word},tokensList {tokens_list[indexn].ordemTkn},ordemGeral = {ordemGeral} ,ordem = {ordem}, index = {indexn}, contador {contador}")
                     # print(f" newList = {newList} ordem = {ordem}")
                 
@@ -532,7 +542,7 @@ def ordenacaoTokens(source_code, qntTokensLinha):
 
     # print(tokens_list)
     # print()
-    # tokens_list.sort(key=ordenacaotokensorting)
+    tokens_list.sort(key=ordenacaotokensorting)
     for y in tokens_list:
 
         print(y)
