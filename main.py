@@ -473,12 +473,18 @@ def ordenacaoTokens(source_code, qntTokensLinha):
     ordemGeral = 0
 
     for texto in lines:
+        
         soma = sum(qntTokensLinha[0:cont])
+        # [3, 5, 0, 10, 1, 3, 17, 1]
         print(f"Soma: {soma}, Cont = {cont}")
         print(texto)
         nextItem = soma+qntTokensLinha[cont]
-        lista = [x.lexeme for x in tokens_list[soma:nextItem]] # listaLex é o de tokens
-        
+        listaindicesOrg = [ind+soma for ind,x in enumerate(tokens_list[soma:nextItem])]
+        print(listaindicesOrg)
+        lista = [x.lexeme for x in tokens_list[soma:nextItem]] # listaLex é o de tokens JUNTO COM AQUI O ERRO!
+        # passar o lexeme e o indice original!
+        # o index aqui é diferente do index de tokenslist!
+        print(lista)
         print(qntTokensLinha[cont])
         if qntTokensLinha[cont]!=0:
             newList = [0 for x in range(qntTokensLinha[cont])]
@@ -486,11 +492,13 @@ def ordenacaoTokens(source_code, qntTokensLinha):
             word = ""
             contador = 0
             ordem = 0
-            qntRem = 0
-            while len(texto)!=contador:
+            
+            while len(texto)!=contador+1:
                 char = texto[contador]
                 word+=char
+
                 if word.replace(" ","") in lista:
+                    # print(word)
                     word = word.replace(" ","")
                     if word in [">","<"]:
                         # checar aqui apra os operadores compostos
@@ -500,26 +508,34 @@ def ordenacaoTokens(source_code, qntTokensLinha):
                             word+="<"
 
                         contador+=1
-                    indexn = lista.index(word)+qntRem
-                    # print(f"palavra: {word}, ordem = {ordem}, index = {indexn}")
+                    indexn = lista.index(word) # erro ta aqui!!
+                    indexn = listaindicesOrg[indexn]
+                    
+                    # checar para o proximo index ate que nao exista mais!
                     
                     tokens_list[indexn].ordemTkn = ordemGeral
-                    print(f" newList = {newList} ordem = {ordem}")
+                    print(f"word = {word} , indexn = {indexn},  tokensList = {tokens_list[indexn].ordemTkn} token = {tokens_list[indexn]}")
                     newList[ordem] = word
-                    if lista.count(word)>1:
-                        del lista[indexn]
-                        qntRem+=1
+                    # print(f"palavra: {word},tokensList {tokens_list[indexn].ordemTkn},ordemGeral = {ordemGeral} ,ordem = {ordem}, index = {indexn}, contador {contador}")
+                    # print(f" newList = {newList} ordem = {ordem}")
+                
                     
                     ordemGeral+=1
                     ordem+=1
+                    # print(f"word = {word} , indexn = {indexn}, listaindexn = {lista[indexn]}, tokensList = {tokens_list[indexn].ordemTkn}")
                     word = ""
                     contador+=1
                 else:
                     contador+=1
-            else:
-                cont+=1
+            
+        cont+=1
 
-    print(tokens_list)
+    # print(tokens_list)
+    # print()
+    # tokens_list.sort(key=ordenacaotokensorting)
+    for y in tokens_list:
+
+        print(y)
 
 def ordenacaotokensorting(e):
     return e.ordemTkn
