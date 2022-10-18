@@ -470,6 +470,7 @@ def ordenacaoTokens(source_code, qntTokensLinha):
     lines = source_code.split("\n")
     cont = 0
     ordemGeral = 0
+    listaIndic = []
 
     for texto in lines:
         
@@ -517,10 +518,13 @@ def ordenacaoTokens(source_code, qntTokensLinha):
                             pass
                         
                     indexn = lista.index(word) 
+                     
+                    if lista.count(word)>1:
+                        # tem repeticao
+                        indexn = lista.index(word,indexn+1)
+
                     indexn = listaindicesOrg[indexn]
-                    
                     # checar para o proximo index ate que nao exista mais!
-                    
                     tokens_list[indexn].ordemTkn = ordemGeral
                     newList[ordem] = word
                     print(f"word = {word} , indexn = {indexn},  tokensList = {tokens_list[indexn].ordemTkn} token = {tokens_list[indexn]}")
@@ -528,7 +532,10 @@ def ordenacaoTokens(source_code, qntTokensLinha):
                     # o erro está apenas nos que nao apareem, logo eles assumem indice 0.
                     # print(f"palavra: {word},tokensList {tokens_list[indexn].ordemTkn},ordemGeral = {ordemGeral} ,ordem = {ordem}, index = {indexn}, contador {contador}")
                     # print(f" newList = {newList} ordem = {ordem}")
-                
+
+
+                    #indexn se repetindo para o ","
+
                     
                     ordemGeral+=1
                     ordem+=1
