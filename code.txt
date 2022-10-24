@@ -13,7 +13,7 @@ feature
 
     is_cake_available : BOOLEAN   -- A function returning true or false 
         do
-            Result := number_of_cakes > 0
+            Result := numberofcakes > 0
         end
 
 end
