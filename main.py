@@ -199,6 +199,7 @@ def classifiesToken(stack):
                     addNewToken(tkn, "id")
                     return
             if tkn!=" ":
+                addNewToken(tkn, "err")
                 throwError(tkn, "Palavra não reconhecida.")
 
 
