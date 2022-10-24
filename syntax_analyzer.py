@@ -61,8 +61,8 @@ productions_table = {"<class_declaration>": {"class": ["<class_header>","<creati
                     "<unary_expression>": {"+": ["<unary>", "<expression>"], "-": ["<unary>", "<expression>"], "not": ["<unary>", "<expression>"]},
                     "<binary_expression>": {"+": ["<expression>", "<binary>", "<expression>"], "-": ["<expression>", "<binary>", "<expression>"], "(": ["<expression>", "<binary>", "<expression>"], "[": ["<expression>", "<binary>", "<expression>"], 
                         "if": ["<expression>", "<binary>", "<expression>"], "not": [], "<identifier>": ["<expression>", "<binary>", "<expression>"]},
-                    "<equality>": {"+": ["<expression>", "<comparison>", "<expression>"], "-": ["<expression>", "<comparison>", "<expression>"], "(": ["<expression>", "<comparison>", "<expression>"], "[": ["<expression>", "<comparison>", "<expression>"], 
-                        "if": ["<expression>", "<comparison>", "<expression>"], "not": ["<expression>", "<comparison>", "<expression>"], "<identifier>": ["<expression>", "<comparison>", "<expression>"]}, 
+                    "<equality>": {"+": ["<operator_expression>", "<comparison>", "<expression>"], "-": ["<operator_expression>", "<comparison>", "<expression>"], "(": ["<parenthesized>", "<comparison>", "<expression>"], "[": ["<bracket_expression>", "<comparison>", "<expression>"], 
+                        "if": ["<conditional>", "<comparison>", "<expression>"], "not": ["<operator_expression>", "<comparison>", "<expression>"], "<identifier>": [["<variable>", "<comparison>", "<expression>"], ["<call>", "<comparison>", "<expression>"]]}, 
                     "<actuals>": {"/=": [], "+": [], "-": [], "*": [], "/": [], "//": [], "^": [], ":=": [], "(": ["(", "<actuals_list>", ")"], ")": [], "[": [], "]": [], ",": [], "create": [], "from": [], "if": [], "not": [], "and": [], "or": [], "<identifier>": []}, 
                     "<actuals_list>": {"+": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "-": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "(": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], 
                         "[": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "if": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "not": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "<identifier>": [["<expression>", ",", "<actuals_list>"], ["<expression>"]]},
@@ -141,10 +141,10 @@ derivation_tree = DerivationTree()
 # =========== FUNÇÕES DA TABELA DE ANÁLISE =========================
 def areListsIntersecctioned(terminals_list, following_tokens):
     for token in following_tokens:
-        print(token.lexeme)
+        """ print(token.lexeme) """
         if token.lexeme in terminals_list:
             return True
-    return False
+    return False    
 
 def conflictResolution(non_terminal, terminal, following_tokens): #VERIFICAR TODOS OS ISALNUM
     if non_terminal == "<identifier_list>":
@@ -157,7 +157,10 @@ def conflictResolution(non_terminal, terminal, following_tokens): #VERIFICAR TOD
         if terminal in ["+", "-"]:
             return 1 if following_tokens[0].isdigit() else 0 #se for numero, só pode ser derivado por special_exp -> manifest_constant
         if terminal == "INTEGER" or terminal=="<identifier>": #ATENÇÃO: AQUI NAO É O PROXIMO TERMINAL, NECESSARIAMENTE, MAS EM UM DOS PROXIMOS
-            return 0 if areListsIntersecctioned( ["<", ">",">=", "<=", "+", "-", "*", "/", "//", "^", "and", "or"], following_tokens) else 1
+            return 0 if areListsIntersecctioned(["<", ">",">=", "<=",  "/=", "=", "+", "-", "*", "/", "//", "^", "and", "or"], following_tokens) else 1
+        if terminal == "<integer>":
+            print("entrei aq")
+            return 0 if following_tokens[0] in ["<", ">",">=", "<=",  "/=", "=", "+", "-", "*", "/", "//", "^", "and", "or"] else 1
     elif non_terminal == "<basic_expression>":
         if (terminal in ["+", "-", "[", "ARRAY", "INTEGER", "not"]) or (terminal.isdigit()):
             return 0 if areListsIntersecctioned(["<", ">",">=", "<="], following_tokens)  else 1
@@ -180,13 +183,13 @@ def conflictResolution(non_terminal, terminal, following_tokens): #VERIFICAR TOD
             else:
                 return 2
         elif terminal == "<identifier>":
-            if areListsIntersecctioned(["<", ">",">=", "<="], following_tokens):
+            if areListsIntersecctioned(["=", "/="], following_tokens):
                 return 1
             elif areListsIntersecctioned(["."], following_tokens):
                 return 2
             elif  areListsIntersecctioned(["["], following_tokens):
                 return 3
-            elif  areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or"], following_tokens):
+            elif  areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or", "<", ">",">=", "<="], following_tokens):
                 return 4
             else: 
                 return 0    
@@ -196,6 +199,9 @@ def conflictResolution(non_terminal, terminal, following_tokens): #VERIFICAR TOD
     elif non_terminal == "<operator_expression>":
         if terminal in ["+", "-", "not"]:
             return 1 if areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or"], following_tokens) else 0                
+    elif non_terminal == "<equality>":
+        if terminal == "<identifier>":
+            return 1 if areListsIntersecctioned(["."], following_tokens) else 0  
     elif non_terminal == "<actuals_list>":
         return 0 if  areListsIntersecctioned([","], following_tokens) else 1
     elif non_terminal == "<call>":
