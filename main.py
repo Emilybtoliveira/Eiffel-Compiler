@@ -152,7 +152,7 @@ def addNewToken(lexeme, lexeme_class):
 
 
 def throwError(error_position, error_message):
-    print(f'An error has be found in position {error_position}.')
+    print(f'An error has be found in {error_position}.')
     print(f'See description: {error_message}')
 
 
@@ -353,7 +353,7 @@ def op_separator(stream):
 
 def delimiters_separator(stream):
 
-    print(stream)
+    #print(stream)
     index = 0
     word = ""
     while index != len(stream):
@@ -561,8 +561,7 @@ def main(input):
         ordenacaoTokens(source_code,qntTokensLinha)
         tokens_list.sort(key=ordenacaotokensorting)
         for y in tokens_list:
-
-            print(y)
+            print(f"Lexema: {y.lexeme} Classe: {y.lexeme_class}")
         # printTokens()
 
         #printHighlighted(source_code, tokens_dict, colors)
