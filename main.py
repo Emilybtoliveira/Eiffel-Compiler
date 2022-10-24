@@ -468,29 +468,30 @@ def ordenacaoTokens(source_code, qntTokensLinha):
     lines = source_code.split("\n")
     cont = 0
     ordemGeral = 0
-
+    
     for texto in lines:
+        
         
         soma = sum(qntTokensLinha[0:cont])
         nextItem = soma+qntTokensLinha[cont]
         listaindicesOrg = [ind+soma for ind,x in enumerate(tokens_list[soma:nextItem])]
-        lista = [x.lexeme for x in tokens_list[soma:nextItem]] 
+        lista = [x.lexeme.replace(" ","") for x in tokens_list[soma:nextItem]] 
+        
         if qntTokensLinha[cont]!=0:
             
             word = ""
             contador = 0
-            ordem = 0
+            
             
             while len(texto)!=contador:
                 char = texto[contador]
                 word+=char
-
+                
                 if word.replace(" ","") in lista:
-                    
                     word = word.replace(" ","")
                     if word in [">","<"]:
                         # checar aqui apra os operadores compostos
-                        
+                
                         if texto[contador+1]==">":
                             word+=">"
                         elif texto[contador+1]=="<":    
@@ -522,7 +523,7 @@ def ordenacaoTokens(source_code, qntTokensLinha):
                     # print(f"word = {word} , indexn = {indexn},  tokensList = {tokens_list[indexn].ordemTkn} token = {tokens_list[indexn]}")
                    
                     ordemGeral+=1
-                    ordem+=1
+                    
                     
                     word = ""
                     contador+=1
