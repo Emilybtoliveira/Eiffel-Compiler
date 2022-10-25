@@ -23,7 +23,7 @@ operators = ["=", "/=", "<", ">", "<=", ">=", "+", "-",
 
 
 @dataclass(order=True)
-class Token:
+class TokenTemp:
     sort_index : int = field(init=False)
     lexeme: string
     lexeme_class: string
@@ -33,7 +33,10 @@ class Token:
         self.sort_index = self.ordemTkn
 
 
-
+@dataclass(order=True)
+class Token:
+    lexeme: string
+    lexeme_class: string
 # ----------------------------
 # MÁQUINA DE ESTADOS GENÉRICA
 # ----------------------------
@@ -149,7 +152,7 @@ def addNewToken(lexeme, lexeme_class):
 
     tokens_dict[lexeme] = lexeme_class """
 
-    new_token = Token(lexeme, lexeme_class)
+    new_token = TokenTemp(lexeme, lexeme_class)
     tokens_list.append(new_token)
 
 
@@ -544,6 +547,8 @@ def ordenacaoTokens(source_code, qntTokensLinha):
 def ordenacaotokensorting(e):
     return e.ordemTkn
 
+def createNewTokenList():
+    return [Token(tkn.lexeme,tkn.lexeme_class) for tkn in tokens_list]
 
 def main(input):
     try:
@@ -568,9 +573,13 @@ def main(input):
         ordenacaoTokens(source_code,qntTokensLinha)
         tokens_list.sort(key=ordenacaotokensorting)
 
-        tokens_list = []
-        for y in tokens_list:
-            print(f"Lexema: {y.lexeme} Classe: {y.lexeme_class}")
+        
+        # for y in tokens_list:
+        #     print(f"Lexema: {y.lexeme} Classe: {y.lexeme_class}")
+
+        newTokensList = createNewTokenList()
+        for z in newTokensList:
+            print(z)
         # printTokens()
 
         #printHighlighted(source_code, tokens_dict, colors)
