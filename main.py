@@ -32,6 +32,8 @@ class Token:
     def __post_init__(self):
         self.sort_index = self.ordemTkn
 
+
+
 # ----------------------------
 # MÁQUINA DE ESTADOS GENÉRICA
 # ----------------------------
@@ -185,20 +187,24 @@ def classifiesToken(stack):
     
     listaStack = stack.split(" ")
     listaStack = [x for x in listaStack if x!= ""]
-
+    
     for tkn in listaStack:
-        tkn = tkn.replace(" ","")
+        tkn = tkn.replace(" ","") # ta aqui
+    
         if (recognizesInteger(tkn)):
             
             addNewToken(tkn, "int")
         elif (recognizesReserved(tkn)):
             addNewToken(tkn, "reserved")
         else:
+            flag = 0
             if tkn.isalnum():
                 if tkn[0].isalpha():
                     addNewToken(tkn, "id")
-                    return
-            if tkn!=" ":
+                    flag = 1
+                    
+                    # return # maybe esse return?
+            if tkn!=" " and flag==0:
                 addNewToken(tkn, "err")
                 throwError(tkn, "Palavra não reconhecida.")
 
@@ -354,7 +360,7 @@ def op_separator(stream):
 
 def delimiters_separator(stream):
 
-    #print(stream)
+    # print(stream)
     index = 0
     word = ""
     while index != len(stream):
@@ -469,7 +475,7 @@ def ordenacaoTokens(source_code, qntTokensLinha):
     lines = source_code.split("\n")
     cont = 0
     ordemGeral = 0
-    
+
     for texto in lines:
         
         
@@ -487,7 +493,7 @@ def ordenacaoTokens(source_code, qntTokensLinha):
             while len(texto)!=contador:
                 char = texto[contador]
                 word+=char
-                
+                # print(word)
                 if word.replace(" ","") in lista:
                     word = word.replace(" ","")
                     if word in [">","<"]:
@@ -561,6 +567,8 @@ def main(input):
 
         ordenacaoTokens(source_code,qntTokensLinha)
         tokens_list.sort(key=ordenacaotokensorting)
+
+        tokens_list = []
         for y in tokens_list:
             print(f"Lexema: {y.lexeme} Classe: {y.lexeme_class}")
         # printTokens()
