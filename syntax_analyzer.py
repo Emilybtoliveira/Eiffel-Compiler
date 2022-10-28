@@ -2,7 +2,7 @@ from curses.ascii import isalnum
 from dataclasses import dataclass
 import string
 from typing import List
-import lexical_analyzer
+import lexical_analyzer as lexical_analyzer
 
 # =========== ESTRUTURAS DA TABELA DE ANALISE =========================
 
@@ -34,7 +34,7 @@ productions_table = {"<class_declaration>": {"class": ["<class_header>","<creati
                     "<instruction>": {"(": ["<call>"], "create": ["<creation_expression>"], "loop": ["<loop>"], "from": ["<loop>"], "until": ["<loop>"], 
                         "if": ["<conditional>"], "<identifier>": [["<call>"], ["<assigner_call>"]]}, 
                     "<assigner_call>": {"<identifier>": ["<variable>", ":=", "<expression>"]},
-                    "<manifest_constant>": {"+": ["<manifest_type>", "<manifest_value>"], "-": ["<manifest_type>", "<manifest_value>"], "<integer>": ["<manifest_type>", "<manifest_value>"]},
+                    "<manifest_constant>": {"+": ["<manifest_type>", "<manifest_value>"], "-": ["<manifest_type>", "<manifest_value>"], "ARRAY": ["<manifest_type>", "<manifest_value>"], "INTEGER": ["<manifest_type>", "<manifest_value>"], "<identifier>": ["<manifest_type>", "<manifest_value>"],  "<integer>": ["<manifest_type>", "<manifest_value>"]},
                     "<manifest_type>": {"+": [], "-": [], "<<": [], "ARRAY": ["<type>"], "INTEGER": ["<type>"], "<identifier>": ["<type>"], "<integer>": []}, 
                     "<manifest_value>": {"+": ["<sign>", "<integer>"], "-": ["<sign>", "<integer>"], "<integer>": ["<sign>", "<integer>"]},
                     "<manifest_value_bracket>": {"+": ["<sign>", "<integer>"], "-": ["<sign>", "<integer>"], "]": [], "<integer>": ["<sign>", "<integer>"]},
@@ -59,14 +59,13 @@ productions_table = {"<class_declaration>": {"class": ["<class_header>","<creati
                     "<operator_expression>": {"+": [["<unary_expression>"], ["<binary_expression>"]], "-": [["<unary_expression>"], ["<binary_expression>"]], "(": ["<binary_expression>"], "[": ["<binary_expression>"], "if": ["<binary_expression>"], 
                         "not": [["<unary_expression>"], ["<binary_expression>"]], "<identifier>": ["<binary_expression>"]},
                     "<unary_expression>": {"+": ["<unary>", "<expression>"], "-": ["<unary>", "<expression>"], "not": ["<unary>", "<expression>"]},
-                    "<binary_expression>": {"+": ["<expression>", "<binary>", "<expression>"], "-": ["<expression>", "<binary>", "<expression>"], "(": ["<expression>", "<binary>", "<expression>"], "[": ["<expression>", "<binary>", "<expression>"], 
-                        "if": ["<expression>", "<binary>", "<expression>"], "not": [], "<identifier>": ["<expression>", "<binary>", "<expression>"]},
-                    "<equality>": {"+": ["<operator_expression>", "<comparison>", "<expression>"], "-": ["<operator_expression>", "<comparison>", "<expression>"], "(": ["<parenthesized>", "<comparison>", "<expression>"], "[": ["<bracket_expression>", "<comparison>", "<expression>"], 
-                        "if": ["<conditional>", "<comparison>", "<expression>"], "not": ["<operator_expression>", "<comparison>", "<expression>"], "<identifier>": [["<variable>", "<comparison>", "<expression>"], ["<call>", "<comparison>", "<expression>"]]}, 
+                    "<binary_expression>": {"(": ["<parenthesized>", "<binary>", "<expression>"], "if": ["<conditional>", "<binary>", "<expression>"], "<identifier>":[["<equality>", "<binary>", "<expression>"], ["<bracket_expression>", "<binary>", "<expression>"], ["<variable>", "<binary>", "<expression>"], ["<call>", "<binary>", "<expression>"]], "<integer>": ["<integer>", "<binary>", "<expression>"]},
+                    "<equality>": {"+": ["<operator_expression>", "<comparison>", "<expression>"], "-": ["<operator_expression>", "<comparison>", "<expression>"], "(": ["<parenthesized>", "<comparison>", "<expression>"], 
+                        "if": ["<conditional>", "<comparison>", "<expression>"], "not": ["<operator_expression>", "<comparison>", "<expression>"], "<identifier>": [["<variable>", "<comparison>", "<expression>"], ["<call>", "<comparison>", "<expression>"], ["<bracket_expression>", "<comparison>", "<expression>"]], "<integer>": ["<integer>", "<comparison>", "<expression>"]}, 
                     "<actuals>": {"/=": [], "+": [], "-": [], "*": [], "/": [], "//": [], "^": [], ":=": [], "(": ["(", "<actuals_list>", ")"], ")": [], "[": [], "]": [], ",": [], "create": [], "from": [], "if": [], "not": [], "and": [], "or": [], "<identifier>": []}, 
                     "<actuals_list>": {"+": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "-": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "(": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], 
-                        "[": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "if": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "not": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "<identifier>": [["<expression>", ",", "<actuals_list>"], ["<expression>"]]},
-                    "<creation_instruction>": {"feature": [], "create": ["create", "<manifest_type>", "<creation_call>"]},
+                        "[": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "if": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "<ARRAY>": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "<INTEGER>": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "not": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "<identifier>": [["<expression>", ",", "<actuals_list>"], ["<expression>"]], "<integer>": [["<expression>", ",", "<actuals_list>"], ["<expression>"]]},
+                    "<creation_instruction>": {"feature": [], "create": ["create", "<manifest_type>", "<creation_call>"], "end": []},
                     "<creation_expression>": {"create": ["create", "<manifest_type>", "<explicit_creation_call>"], },
                     "<explicit_creation_call>": {"+": [], "-": [], ".": [".", "<unqualified_call>"], "(": [], "[": [], "feature": [], "create": [], "from": [], "if": [], "not": [], "<identifier>": []},
                     "<creation_call>": {"<identifier>": ["<variable>", "<explicit_creation_call>"]},
@@ -85,10 +84,11 @@ productions_table = {"<class_declaration>": {"class": ["<class_header>","<creati
                     "<else_part>": {"end": [], "else": ["else", "<compound>"]},
                     "<binary>": {"<": ["<"], ">": [">"], "<=": ["<="], ">=": [">="], "+": ["+"], "-": ["-"], "*": ["*"], "/": ["/"], "//": ["//"], "^": ["^"], "and": ["and"], "or": ["or"]},
                     "<unary>": {"+": ["+"], "-": ["-"], "not": ["not"]},
-                    "<comparison>": {"/=": ["/="], "=": ["="]},
+                    "<comparison>": {"/=": ["/="], "=": ["="], "<": ["<"], ">": [">"], "<=": ["<="], ">=": [">="]},
                     "<sign>": {"+": ["+"], "-": ["-"], "<integer>": []}
                     }
-productions_panic_table = {"<class_header>": ["end", "feature", "create"],
+productions_panic_table = {"<class_declaration>": ["end", "feature", "create"],
+                            "<class_header>": ["end", "feature", "create"],
                             "<class_name>": ["end", "feature", "create"],
                             "<feature_name>": ["("],
                             "<entity_declaration_list>": [")"],
@@ -103,7 +103,51 @@ productions_panic_table = {"<class_header>": ["end", "feature", "create"],
                             "<manifest_array>": ["/=", "+", "-","*", "/", "//", "^", ":=", ")", ",", "and", "or"],
                             "<expression_list>": ["]", ">>"],
                             "<manifest_tuple>": ["/=", "+", "-","*", "/", "//", "^", ":=", ")", ",", "and", "or"],
-                            "<target>": ["."]}
+                            "<target>": ["."],                            
+                            "<features>": ["end"],
+                            "<feature_clause>": ["end"],
+                            "<feature_declaration_list>": ["end"],
+                            "<feature_declaration>": ["end"],
+                            "<declaration_body>": ["end"],
+                            "<formal_arguments>": ["end"],
+                            "<entity_declaration_list_e>": ["end"],
+                            "<argument_type_mark>": ["end"],
+                            "<feature_value>": ["end"],
+                            "<explicit_value>": ["end"],
+                            "<attribute_or_routine>": ["end"],
+                            "<compound>": ["end"],
+                            "<instruction>": ["end"],
+                            "<manifest_value_bracket>": ["end"],
+                            "<expression>": ["end"], 
+                            "<basic_expression>": ["end"],
+                            "<special_expression>": ["end"],
+                            "<bracket_expression>": ["end"],
+                            "<operator_expression>": ["end"],
+                            "<unary_expression>": ["end"],
+                            "<binary_expression>": ["end"],
+                            "<equality>": ["end"],
+                            "<actuals>": ["end"],
+                            "<actuals_list>": ["end"],
+                            "<creation_instruction>": ["end"],
+                            "<creation_expression>": ["end"],
+                            "<explicit_creation_call>": ["end"],
+                            "<creation_call>": ["end"],
+                            "<call>": ["end"],
+                            "<unqualified_call>": ["end"],
+                            "<bracket_target>": ["end"],
+                            "<parenthesized>": ["end"],
+                            "<variable>": ["end"],
+                            "<loop>": ["end"],
+                            "<initialization>": ["end"],
+                            "<exit_condition>": ["end"],
+                            "<loop_body>": ["end"],
+                            "<conditional>": ["end"],
+                            "<then_part>": ["end"],
+                            "<else_part>": ["end"],
+                            "<binary>": ["end"],
+                            "<unary>": ["end"],
+                            "<comparison>": ["end"],
+                            "<sign>": ["end"]}
 stack = [initial_non_terminal]
 current_token_index = 0
 
@@ -111,7 +155,6 @@ current_token_index = 0
 
 @dataclass
 class Node:
-    type: string #NT ou T
     value: string
 
 @dataclass
@@ -121,7 +164,7 @@ class Parent:
 
     def addNewChildren(self, new_children):
         for child in new_children:
-            new_parent = Parent(Node("NT", child), [])
+            new_parent = Parent(Node(child), [])
             self.children.append(new_parent)
 
        # print(self.children)
@@ -131,12 +174,12 @@ class DerivationTree:
     initial_node: Parent
 
     def __init__(self):
-        self.initial_node = Parent(Node("NT", initial_non_terminal), [])
+        self.initial_node = Parent(Node(initial_non_terminal), [])
     
-
 
 tokens = lexical_analyzer.main("code.txt")
 derivation_tree = DerivationTree()
+tree = ""
 
 # =========== FUNÇÕES DA TABELA DE ANÁLISE =========================
 def areListsIntersecctioned(terminals_list, following_tokens):
@@ -146,51 +189,74 @@ def areListsIntersecctioned(terminals_list, following_tokens):
             return True
     return False    
 
+def doesOperatorComesBeforeParentesis(following_tokens):
+    found_operator = 0
+    found_parentesis = 0
+
+    for token in following_tokens:
+        if token.lexeme in ["+", "-", "*", "/", "//", "^", "and", "or", "<", ">",">=", "<=", "=", "/="]:
+            found_operator = 1
+
+            if found_parentesis == 0:
+                return True
+            else:
+                return False
+        
+        elif token.lexeme == ")":
+            found_parentesis = 1
+
+            if found_operator == 0:
+                return False 
+            else:
+                return True
+
 def conflictResolution(non_terminal, terminal, following_tokens): #VERIFICAR TODOS OS ISALNUM
     if non_terminal == "<identifier_list>":
-       return 0 if following_tokens[0] == [","] else 1 #se tem , então <identifier> , <identifier_list> 
+       return 0 if following_tokens[0].lexeme == "," else 1 #se tem , então <identifier> , <identifier_list> 
     elif non_terminal == "<instruction>":
         return 1 if areListsIntersecctioned([":="], following_tokens) else 0
     elif non_terminal == "<expression_list>":
        return 0 if areListsIntersecctioned([","], following_tokens) else 1 #ATENÇAÕ AQUI!!!
     elif non_terminal == "<expression>":
         if terminal in ["+", "-"]:
-            return 1 if following_tokens[0].isdigit() else 0 #se for numero, só pode ser derivado por special_exp -> manifest_constant
+            return 1 if following_tokens[0].lexeme_class == 'int' else 0 #se for numero, só pode ser derivado por special_exp -> manifest_constant
         if terminal == "INTEGER" or terminal=="<identifier>": #ATENÇÃO: AQUI NAO É O PROXIMO TERMINAL, NECESSARIAMENTE, MAS EM UM DOS PROXIMOS
-            return 0 if areListsIntersecctioned(["<", ">",">=", "<=",  "/=", "=", "+", "-", "*", "/", "//", "^", "and", "or"], following_tokens) else 1
+            #return 0 if (areListsIntersecctioned(["<", ">",">=", "<=",  "/=", "=", "+", "-", "*", "/", "//", "^", "and", "or"], following_tokens) or following_tokens[0].lexeme_class == "id" or following_tokens[0].lexeme_class == "reserved") else 1
+            return 1 if (following_tokens[0].lexeme in ["<<", "+", "-"] or following_tokens[0].lexeme_class == "int") else 0
         if terminal == "<integer>":
-            print("entrei aq")
-            return 0 if following_tokens[0] in ["<", ">",">=", "<=",  "/=", "=", "+", "-", "*", "/", "//", "^", "and", "or"] else 1
+            return 0 if following_tokens[0].lexeme in ["<", ">",">=", "<=",  "/=", "=", "+", "-", "*", "/", "//", "^", "and", "or"] else 1
     elif non_terminal == "<basic_expression>":
         if (terminal in ["+", "-", "[", "ARRAY", "INTEGER", "not"]) or (terminal.isdigit()):
-            return 0 if areListsIntersecctioned(["<", ">",">=", "<="], following_tokens)  else 1
+            return 0 if areListsIntersecctioned(["=", "/="], following_tokens)  else 1
         elif terminal in ["("]:
-            if areListsIntersecctioned(["<", ">",">=", "<="], following_tokens):
-                return 1
+            if areListsIntersecctioned(["=", "/="], following_tokens):
+                return 0 if doesOperatorComesBeforeParentesis(following_tokens) else 1
+            elif areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or", "<", ">",">=", "<="], following_tokens):
+                return 0 if doesOperatorComesBeforeParentesis(following_tokens) else 4
             elif areListsIntersecctioned(["."], following_tokens):
                 return 2
             elif areListsIntersecctioned(["["], following_tokens):
-                return 3
-            elif areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or"], following_tokens):
-                return 4
+                return 3            
             else: 
                 return 0
         elif terminal in ["if"]:
-            if areListsIntersecctioned(["<", ">",">=", "<="], following_tokens):
+            if areListsIntersecctioned(["=", "/="], following_tokens):
                 return 0
-            elif areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or"], following_tokens):
+            elif areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or", "<", ">",">=", "<="], following_tokens):
                 return 1
             else:
                 return 2
         elif terminal == "<identifier>":
+            if following_tokens[0].lexeme_class in ["id", "reserved"]:
+                return 0
             if areListsIntersecctioned(["=", "/="], following_tokens):
                 return 1
+            elif  areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or", "<", ">",">=", "<="], following_tokens):
+                return 4
             elif areListsIntersecctioned(["."], following_tokens):
                 return 2
             elif  areListsIntersecctioned(["["], following_tokens):
                 return 3
-            elif  areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or", "<", ">",">=", "<="], following_tokens):
-                return 4
             else: 
                 return 0    
     elif non_terminal == "<special_expression>":
@@ -199,15 +265,30 @@ def conflictResolution(non_terminal, terminal, following_tokens): #VERIFICAR TOD
     elif non_terminal == "<operator_expression>":
         if terminal in ["+", "-", "not"]:
             return 1 if areListsIntersecctioned(["+", "-", "*", "/", "//", "^", "and", "or"], following_tokens) else 0                
+    elif non_terminal == "<binary_expression>":
+        if terminal == "<identifier>":
+            if areListsIntersecctioned(["=", "/="], following_tokens):
+                return 0
+            if areListsIntersecctioned([".", "("], following_tokens):
+                return 3 
+            elif areListsIntersecctioned(["["], following_tokens):
+                return 1
+            else:
+                return 2 
     elif non_terminal == "<equality>":
         if terminal == "<identifier>":
-            return 1 if areListsIntersecctioned(["."], following_tokens) else 0  
+            if areListsIntersecctioned(["."], following_tokens):
+                return 1 
+            elif areListsIntersecctioned(["["], following_tokens):
+                return 2 
+            else:
+                return 0  
     elif non_terminal == "<actuals_list>":
         return 0 if  areListsIntersecctioned([","], following_tokens) else 1
     elif non_terminal == "<call>":
-        return 0 if  areListsIntersecctioned(["."], following_tokens) else 1
+        return 0 if  (following_tokens[0].lexeme == ".") else 1
     elif non_terminal == "<target>":
-        return 1 if areListsIntersecctioned(["."], following_tokens) else 0 #nesse caso aqui, é se tiver OUTRO ponto depois do primeiro
+        return 1 if  areListsIntersecctioned(["."], following_tokens[1:])  else 0 #nesse caso aqui, é se tiver OUTRO ponto depois do primeiro
     elif non_terminal == "<bracket_target>":
         if terminal == "(":
             return 0 if areListsIntersecctioned(["."], following_tokens) else 1
@@ -224,7 +305,7 @@ def push(lista):
     
     for item in listReversed:
         stack.append(item)
-    print(stack)
+    #print(f"STACK: {stack}")
 
 def pop():
     temporary = stack[-1]
@@ -232,21 +313,34 @@ def pop():
     return temporary
 
 def getTopStack():
-    return(stack[len(stack) - 1])
+    return "" if stack == [] else (stack[len(stack) - 1])
 
 
 # =========== FUNÇÕES GERAIS =====================
+def throwError(description):
+        print(f'An error has be found in {tokens[current_token_index].lexeme}.')
+        print(f'See description: {description}.\n')
+    
+def writeDerivationTree(path="tree.txt"):
+    global tree
+
+    with open(path, "w") as source:
+        return source.write(tree)
+
 def getFollowingTokens():
     following_tokens = tokens[slice(current_token_index+1, current_token_index+6)]
-    print(following_tokens)
+    #print(following_tokens)
     return following_tokens
 
 def recursiveParser(current_parent_node):
-    print(f"chamada para o nó {current_parent_node.parent_node.value}")
     global current_token_index
+    if current_token_index >= len(tokens):
+        return()
+
+    #print(f"chamada para o nó {current_parent_node.parent_node.value}")    
 
     current_token = tokens[current_token_index]
-    print(f"topo da pilha: {getTopStack()} topo da fita: {current_token.lexeme}")
+    #print(f"topo da pilha: {getTopStack()} topo da fita: {current_token.lexeme}")
 
     if current_token.lexeme_class == 'id':
         terminal = "<identifier>"
@@ -261,7 +355,7 @@ def recursiveParser(current_parent_node):
         recursiveParser(current_parent_node)
     #se topo_pilha e current_token forem iguais, desempilha e reconhece
     elif terminal == getTopStack():      
-        print("entrei")  
+        #print("entrei")  
         pop()                   
         current_parent_node.addNewChildren([current_token.lexeme])
         current_token_index += 1
@@ -269,33 +363,71 @@ def recursiveParser(current_parent_node):
     else:
         try:
             children_list = productions_table[getTopStack()][terminal]
-            print(len(children_list))
+           #print(len(children_list))
 
 
             if (len(children_list) > 1) and (type(children_list[0]) == list):
                 children_index = conflictResolution(getTopStack(), terminal, getFollowingTokens())
-                print(children_index)
+                #print(children_index)
 
                 pop()
                 push(children_list[children_index])
                 current_parent_node.addNewChildren(children_list[children_index])
+                
             else:               
                 pop()
                 push(children_list)            
                 current_parent_node.addNewChildren(children_list)
+            
 
             for child in current_parent_node.children:
-                recursiveParser(child)
+                recursiveParser(child) 
+        
+        except: #Não existe a produção
+            if (getTopStack() in productions_panic_table.keys()) and (terminal in productions_panic_table[getTopStack()]):
+                throwError("Unexpected Token")
+                pop()
+            else:
+                if "<" in getTopStack():
+                    throwError("Unexpected Token")
+                else:
+                    throwError(f"Expected {getTopStack()}")
+                current_token_index += 1 
+                recursiveParser(current_parent_node)           
+
                 
 
-        except: #Não existe a produção
-            print("não existe transição")
-            exit()
+            
     
+def generateVisualDerivationTree(current_parent_node, depth):
+    global tree
+
+    if depth == 1:
+        tree = f"pai: {current_parent_node.parent_node.value}\n"
+
+
+    for child in current_parent_node.children:
+        for i in range(depth):
+            tree += "    "
+        tree+="|\n"
+        
+        for i in range(depth):
+            tree += "    "
+        tree += f"–– > filho: {child.parent_node.value}\n"
+
+        depth+=1
+        generateVisualDerivationTree(child, depth)
+        depth-=1
+
 
 def main():
-    current_parent_node = derivation_tree.initial_node 
+    global tree
+    current_parent_node = derivation_tree.initial_node
     recursiveParser(current_parent_node)     
-        
+
+    generateVisualDerivationTree(current_parent_node, 1)
+    writeDerivationTree()
+    print("Verifique o arquivo ./tree.txt para visualizar a árvore de derivação.")
+      
 
 main()
