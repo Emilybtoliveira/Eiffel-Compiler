@@ -3,17 +3,17 @@ class
 
 feature
     
-    number_of_cakes : INTEGER
+    numberofcakes : INTEGER
         -- A variable containing an integer
 
-    buy_cake (amount : INTEGER, price : INTEGER)   -- A function accepting arguments
+    buycake (amount : INTEGER, price : INTEGER)   -- A function accepting arguments
         do
             -- Some code here...
         end
 
-    is_cake_available : BOOLEAN   -- A function returning true or false 
+    iscakeavailable : BOOLEAN   -- A function returning true or false 
         do
-            Result := number_of_cakes > 0
+            Result := numberofcakes /= 0
         end
 
 end
