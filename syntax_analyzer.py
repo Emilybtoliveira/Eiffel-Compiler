@@ -177,7 +177,7 @@ class DerivationTree:
         self.initial_node = Parent(Node(initial_non_terminal), [])
     
 
-tokens = lexical_analyzer.main("code.txt")
+tokens = lexical_analyzer.main()
 derivation_tree = DerivationTree()
 tree = ""
 
@@ -222,7 +222,7 @@ def conflictResolution(non_terminal, terminal, following_tokens): #VERIFICAR TOD
             return 1 if following_tokens[0].lexeme_class == 'int' else 0 #se for numero, só pode ser derivado por special_exp -> manifest_constant
         if terminal == "INTEGER" or terminal=="<identifier>": #ATENÇÃO: AQUI NAO É O PROXIMO TERMINAL, NECESSARIAMENTE, MAS EM UM DOS PROXIMOS
             #return 0 if (areListsIntersecctioned(["<", ">",">=", "<=",  "/=", "=", "+", "-", "*", "/", "//", "^", "and", "or"], following_tokens) or following_tokens[0].lexeme_class == "id" or following_tokens[0].lexeme_class == "reserved") else 1
-            return 1 if (following_tokens[0].lexeme in ["<<", "+", "-"] or following_tokens[0].lexeme_class == "int") else 0
+            return 1 if ((following_tokens[0].lexeme == "<<") or (following_tokens[0].lexeme in ["+", "-"] and following_tokens[1].lexeme_class == "int") or (following_tokens[0].lexeme_class == "int")) else 0
         if terminal == "<integer>":
             return 0 if following_tokens[0].lexeme in ["<", ">",">=", "<=",  "/=", "=", "+", "-", "*", "/", "//", "^", "and", "or"] else 1
     elif non_terminal == "<basic_expression>":
@@ -318,8 +318,8 @@ def getTopStack():
 
 # =========== FUNÇÕES GERAIS =====================
 def throwError(description):
-        print(f'An error has be found in {tokens[current_token_index].lexeme}.')
-        print(f'See description: {description}.\n')
+    print(f'An error has been found in {tokens[current_token_index].lexeme}.')
+    print(f'See description: {description}.\n')
     
 def writeDerivationTree(path="tree.txt"):
     global tree
@@ -394,11 +394,7 @@ def recursiveParser(current_parent_node):
                     throwError(f"Expected {getTopStack()}")
                 current_token_index += 1 
                 recursiveParser(current_parent_node)           
-
-                
-
-            
-    
+  
 def generateVisualDerivationTree(current_parent_node, depth):
     global tree
 
@@ -420,8 +416,11 @@ def generateVisualDerivationTree(current_parent_node, depth):
         depth-=1
 
 
-def main():
+def main(tokens_list):
     global tree
+    global tokens
+    tokens = tokens_list
+
     current_parent_node = derivation_tree.initial_node
     recursiveParser(current_parent_node)     
 
@@ -430,4 +429,4 @@ def main():
     print("Verifique o arquivo ./tree.txt para visualizar a árvore de derivação.")
       
 
-main()
+#main()

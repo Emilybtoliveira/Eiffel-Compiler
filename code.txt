@@ -1,58 +1,19 @@
-class 
-    ACCOUNT
+class
+    BAKERY
 
 feature
+    
+    numberofcakes : INTEGER
+        -- A variable containing an integer
 
-    balance: INTEGER
-    minimumbalance: PERSON
-    minimumbalance: INTEGER = 1000
-
-    open (who: PERSON, sla: ALGO)
+    buycake (amount : INTEGER, price : INTEGER)   -- A function accepting arguments
         do
-            minimumbalance := who
-            squares := ARRAY [INTEGER] <<1, 4, 9, 16, 25>>
-            squares := squares[4] // 1
+            -- Some code here...
         end
 
-    deposit (sum: INTEGER)
-            -- Deposit sum into the account.
+    iscakeavailable : BOOLEAN   -- A function returning true or false 
         do
-            add (-sum)
-            
-            create fulano
-            fulano.deposit(10)
+            Result := numberofcakes /= 0
         end
 
-    withdraw (sum, who: INTEGER)
-            -- Withdraw sum from the account.
-        do
-            if time = noon then
-                sum := sum + 1
-
-                if time <= evening then
-                    sum := sum * 2
-                end
-            else
-                sum := sum -3
-            end
-        end
-
-    maywithdraw (sum: INTEGER): INTEGER
-            -- Is there enough money to withdraw sum?
-        do
-            Result := balance >= sum + minimumbalance
-        end
-
-feature
-    add (sum: INTEGER)
-        do
-            from
-                balance := 0
-            until
-                balance >= 10
-            loop
-                balance := i + 1
-            end
-        end
-
-end -- ACCOUNT
+end
