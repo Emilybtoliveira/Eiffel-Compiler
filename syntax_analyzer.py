@@ -3,6 +3,17 @@ from dataclasses import dataclass
 import string
 from typing import List
 import lexical_analyzer as lexical_analyzer
+import numpy as np
+
+testetabela = []
+
+@dataclass
+class Simbolo:
+    lexema:str
+    tipo:str
+    valor:int
+    escopo:None
+    idrec:int
 
 # =========== ESTRUTURAS DA TABELA DE ANALISE =========================
 
@@ -332,18 +343,31 @@ def getFollowingTokens():
     #print(following_tokens)
     return following_tokens
 
+def checkIfExistsInSymbol(current_token):
+    global testetabela
+
+    for teste in testetabela:
+        return teste.lexema == current_token.lexeme
+
 def recursiveParser(current_parent_node):
+
+
     global current_token_index
+    global testetabela
     if current_token_index >= len(tokens):
         return()
 
-    #print(f"chamada para o nó {current_parent_node.parent_node.value}")    
 
     current_token = tokens[current_token_index]
-    #print(f"topo da pilha: {getTopStack()} topo da fita: {current_token.lexeme}")
 
     if current_token.lexeme_class == 'id':
         terminal = "<identifier>"
+        # if not checkIfExistsInSymbol(current_token):
+        #     # print(f"topo da pilha: {getTopStack()} topo da fita: {current_token.lexeme}")
+        #     print(f"chamada para o nó {current_parent_node.parent_node.value}") 
+        #     print(current_token)   
+        #     ds = Simbolo(current_token.lexeme,current_parent_node.parent_node.value,0,"global",0)
+        #     testetabela.append(ds)
     elif current_token.lexeme_class == 'int':
         terminal = "<integer>"
     else:
@@ -397,6 +421,7 @@ def recursiveParser(current_parent_node):
   
 def generateVisualDerivationTree(current_parent_node, depth):
     global tree
+    
 
     if depth == 1:
         tree = f"pai: {current_parent_node.parent_node.value}\n"
@@ -409,23 +434,75 @@ def generateVisualDerivationTree(current_parent_node, depth):
         
         for i in range(depth):
             tree += "    "
+
         tree += f"–– > filho: {child.parent_node.value}\n"
 
         depth+=1
         generateVisualDerivationTree(child, depth)
         depth-=1
 
+def testeGrafo(current,escopo):
+    global testetabela
+    valor = 0
+
+    for child in current.children:
+        
+        if(child.parent_node.value=="<feature_declaration>"):
+            ident = child.children[0].children[0].children[0].parent_node.value
+            ehProced = child.children[1].children[1].children == []
+            
+            if not ehProced:
+                ehVar = child.children[1].children[2].children == []
+                tipo = child.children[1].children[1].children[-1].children[-1].parent_node.value
+
+                if tipo == "STRING":
+                    valor = ""
+
+                if not ehVar:
+                    tipo = "funcao:"+tipo
+
+            else:
+                tipo = "procedure"
+
+            simb = Simbolo(ident,tipo,valor,"global",0)
+            testetabela.append(simb)
+            escopo = ident
+
+        elif child.parent_node.value=="<entity_declaration_list>":
+            nomeAtrb = child.children[0].children[0].children[0].children[0].parent_node.value
+            tipoAtrb = child.children[0].children[1].children[1].children[0].parent_node.value
+            
+            
+            if tipoAtrb == "STRING":
+                    valor = ""
+
+            simb = Simbolo(nomeAtrb,tipoAtrb,valor,escopo,0)
+            testetabela.append(simb)
+        testeGrafo(child,escopo)
+        
+            
+
+
 
 def main(tokens_list):
     global tree
     global tokens
+    global testetabela
     tokens = tokens_list
+
 
     current_parent_node = derivation_tree.initial_node
     recursiveParser(current_parent_node)     
 
+    
     generateVisualDerivationTree(current_parent_node, 1)
     writeDerivationTree()
+
+    print()
+    testeGrafo(current_parent_node,"global")
+
+    for x in testetabela:
+        print(x)
     print("Verifique o arquivo ./tree.txt para visualizar a árvore de derivação.")
       
 
