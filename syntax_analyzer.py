@@ -5,7 +5,7 @@ from typing import List
 import lexical_analyzer as lexical_analyzer
 import numpy as np
 
-testetabela = []
+SymbolTable = []
 
 @dataclass
 class Simbolo:
@@ -344,16 +344,16 @@ def getFollowingTokens():
     return following_tokens
 
 def checkIfExistsInSymbol(current_token):
-    global testetabela
+    global SymbolTable
 
-    for teste in testetabela:
+    for teste in SymbolTable:
         return teste.lexema == current_token.lexeme
 
 def recursiveParser(current_parent_node):
 
 
     global current_token_index
-    global testetabela
+    global SymbolTable
     if current_token_index >= len(tokens):
         return()
 
@@ -367,7 +367,7 @@ def recursiveParser(current_parent_node):
         #     print(f"chamada para o nó {current_parent_node.parent_node.value}") 
         #     print(current_token)   
         #     ds = Simbolo(current_token.lexeme,current_parent_node.parent_node.value,0,"global",0)
-        #     testetabela.append(ds)
+        #     SymbolTable.append(ds)
     elif current_token.lexeme_class == 'int':
         terminal = "<integer>"
     else:
@@ -441,44 +441,44 @@ def generateVisualDerivationTree(current_parent_node, depth):
         generateVisualDerivationTree(child, depth)
         depth-=1
 
-def testeGrafo(current,escopo):
-    global testetabela
-    valor = 0
+def symbolTableConstruct(current,scope):
+    global SymbolTable
+    value = 0
 
     for child in current.children:
         
         if(child.parent_node.value=="<feature_declaration>"):
-            ident = child.children[0].children[0].children[0].parent_node.value
-            ehProced = child.children[1].children[1].children == []
+            identifier = child.children[0].children[0].children[0].parent_node.value
+            isProcedure = child.children[1].children[1].children == []
             
-            if not ehProced:
-                ehVar = child.children[1].children[2].children == []
-                tipo = child.children[1].children[1].children[-1].children[-1].parent_node.value
+            if not isProcedure:
+                isVariable = child.children[1].children[2].children == []
+                typeId = child.children[1].children[1].children[-1].children[-1].parent_node.value
 
-                if tipo == "STRING":
-                    valor = ""
+                if typeId == "STRING":
+                    value = ""
 
-                if not ehVar:
-                    tipo = "funcao:"+tipo
+                if not isVariable:
+                    typeId = "funcao:"+typeId
 
             else:
-                tipo = "procedure"
+                typeId = "procedure"
 
-            simb = Simbolo(ident,tipo,valor,"global",0)
-            testetabela.append(simb)
-            escopo = ident
+            symbolDc = Simbolo(identifier,typeId,value,"global",0)
+            SymbolTable.append(symbolDc)
+            scope = identifier
 
         elif child.parent_node.value=="<entity_declaration_list>":
-            nomeAtrb = child.children[0].children[0].children[0].children[0].parent_node.value
-            tipoAtrb = child.children[0].children[1].children[1].children[0].parent_node.value
+            idParam = child.children[0].children[0].children[0].children[0].parent_node.value
+            typeParam = child.children[0].children[1].children[1].children[0].parent_node.value
             
             
-            if tipoAtrb == "STRING":
-                    valor = ""
+            if typeParam == "STRING":
+                    value = ""
 
-            simb = Simbolo(nomeAtrb,tipoAtrb,valor,escopo,0)
-            testetabela.append(simb)
-        testeGrafo(child,escopo)
+            symbolDc = Simbolo(idParam,typeParam,value,scope,0)
+            SymbolTable.append(symbolDc)
+        symbolTableConstruct(child,scope)
         
             
 
@@ -487,7 +487,7 @@ def testeGrafo(current,escopo):
 def main(tokens_list):
     global tree
     global tokens
-    global testetabela
+    global SymbolTable
     tokens = tokens_list
 
 
@@ -499,9 +499,9 @@ def main(tokens_list):
     writeDerivationTree()
 
     print()
-    testeGrafo(current_parent_node,"global")
+    symbolTableConstruct(current_parent_node,"global")
 
-    for x in testetabela:
+    for x in SymbolTable:
         print(x)
     print("Verifique o arquivo ./tree.txt para visualizar a árvore de derivação.")
       
