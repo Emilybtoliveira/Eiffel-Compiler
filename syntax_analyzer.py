@@ -337,7 +337,7 @@ def throwError(description):
 def writeDerivationTree(path="tree.txt"):
     global tree
 
-    with open(path, "w") as source:
+    with open(path, "w", encoding="utf-8") as source:
         return source.write(tree)
 
 def getFollowingTokens():
@@ -437,12 +437,11 @@ def generateVisualDerivationTree(current_parent_node, depth):
         for i in range(depth):
             tree += "    "
 
-        tree += f"–– > filho: {child.parent_node.value}\n"
+        tree += f"> {child.parent_node.value}\n"
 
         depth+=1
         generateVisualDerivationTree(child, depth)
         depth-=1
-
 
 
 def getChilds(ent):
@@ -512,10 +511,10 @@ def symbolTableConstruct(current,scope,index):
         symbolTableConstruct(child,scope,index)
         
             
+def main(tokens_list = None):
+    if(tokens_list == None):
+        tokens_list = lexical_analyzer.main()
 
-
-
-def main(tokens_list):
     global tree
     global tokens
     global SymbolTable
@@ -536,5 +535,5 @@ def main(tokens_list):
         print(x)
     print("Verifique o arquivo ./tree.txt para visualizar a árvore de derivação.")
       
-
-#main()
+if __name__ == "__main__":
+    main()
