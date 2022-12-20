@@ -5,22 +5,24 @@ import string
 from dataclasses import dataclass
 
 # ============ ESTRUTURAS DE DADOS ============
-current_position = 0
-line_count = 0
-source_code = ""
-tokens_list = []
-
-delimiters = ["(", ")", "[", "]", ",", "<<", ">>"]
-reserved_words = ["feature", "create", "class", "integer", "loop", "from",
-                  "until", "array", "do", "end", "not", "and", "or", "if", "then", "else"]
-operators = ["=", "/=", "<", ">", "<=", ">=",
-             "+", "-", "*", "/", "//", "^", ":=", ":", "."]
 
 
 @dataclass()
 class Token:
     lexeme: string
     lexeme_class: string
+
+
+current_position = 0
+line_count = 0
+source_code = ""
+tokens_list: list[Token] = []
+
+delimiters = ["(", ")", "[", "]", ",", "<<", ">>"]
+reserved_words = ["feature", "create", "class", "integer", "loop", "from",
+                  "until", "array", "do", "end", "not", "and", "or", "if", "then", "else"]
+operators = ["=", "/=", "<", ">", "<=", ">=",
+             "+", "-", "*", "/", "//", "^", ":=", ":", "."]
 
 # ============ RECONHECEDORES ============
 
@@ -238,6 +240,14 @@ def parseLine(line):
 
     source_code = line
     iterativeScanner(source_code)
+
+    classToToken, tokenToClass = {}, {}
+    for t in tokens_list:
+        if t.lexeme_class not in classToToken.keys():
+            classToToken[t.lexeme_class] = []
+        classToToken[t.lexeme_class].append(t.lexeme)
+        tokenToClass[t.lexeme] = t.lexeme_class
+
     return tokens_list
 
 

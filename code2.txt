@@ -1,0 +1,59 @@
+class
+    BAKERY
+
+feature
+    
+    sold : INTEGER
+    income : INTEGER -- duas primeiras casas decimais são centavos 
+    cost : INTEGER -- duas primeiras casas decimais são centavos 
+
+    chocolate_chocolate (size: INTEGER) : INTEGER
+        do
+            sold += 1
+            baseCost := 50
+            sizeAdd := size * 30
+            flavourAdd := size * 5
+
+            income += baseCost + sizeAdd + flavourAdd 
+            cost += (baseCost * 7 / 10) + (sizeAdd * 3 / 5) + (flavourAdd * 3 / 5)
+
+            Result := cost
+        end
+
+    chocolate_morango (size: INTEGER) : INTEGER
+        do
+            sold += 1
+            baseCost := 50
+            sizeAdd := size * 28
+            flavourAdd := size * 15
+
+            income += baseCost + sizeAdd + flavourAdd 
+            cost += (baseCost * 7 / 10) + (sizeAdd * 6 / 10) + (flavourAdd * 2 / 3)
+
+            Result := cost
+        end
+
+    baunilha_morango (size: INTEGER) : INTEGER
+        do
+            sold += 1
+            baseCost := 45
+            sizeAdd := size * 27
+            flavourAdd := size * 12
+
+            income += baseCost + sizeAdd + flavourAdd 
+            cost += (baseCost * 7 / 10) + (sizeAdd * 3 / 5) + (flavourAdd * 5 / 6)
+
+            Result := cost
+        end
+
+    getBalance : INTEGER
+        do
+            Result := (income - cost)
+        end
+
+    getBalancePerCake : INTEGER
+        do
+            Result := (income - cost) / sold
+        end
+
+end
