@@ -2,22 +2,28 @@ class
     BAKERY
 
 feature
-    
-    numberofcakes : INTEGER
-        -- A variable containing an integer
-    newprice : INTEGER
 
-    buycake (amount : INTEGER, price : INTEGER)  -- A function accepting arguments
+    sold : INTEGER
+    income : INTEGER -- duas primeiras casas decimais são centavos 
+    cost : INTEGER -- duas primeiras casas decimais são centavos 
+
+    orderCake (size: INTEGER) : INTEGER
         do
-            -- Some code here...
-            newprice := 10
-            teste := 12
-            Result := amount /= price
+            sold := sold + 1
+
+            baseCost := 45
+            add := size + 15
+            flavourAdd := size + 5
+
+            income := income + baseCost + add + flavourAdd 
+            cost := cost + add + flavourAdd
+
+            Result := cost
         end
 
-    iscakeavailable : INTEGER   -- A function returning true or false 
+    getBalance : INTEGER
         do
-            Result := numberofcakes /= 0
+            Result := income - cost
         end
 
 end

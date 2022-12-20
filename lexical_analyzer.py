@@ -248,7 +248,7 @@ def parseLine(line):
         classToToken[t.lexeme_class].append(t.lexeme)
         tokenToClass[t.lexeme] = t.lexeme_class
 
-    return tokens_list
+    return classToToken, tokenToClass, tokens_list
 
 
 def main(debug=False, code: str = None):
