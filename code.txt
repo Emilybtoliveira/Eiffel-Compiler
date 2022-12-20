@@ -5,13 +5,17 @@ feature
     
     numberofcakes : INTEGER
         -- A variable containing an integer
+    newprice : INTEGER
 
-    buycake (amount : INTEGER, price : INTEGER)   -- A function accepting arguments
+    buycake (amount : INTEGER, price : INTEGER)  -- A function accepting arguments
         do
             -- Some code here...
+            newprice := 10
+            teste := 12
+            Result := amount /= price
         end
 
-    iscakeavailable : BOOLEAN   -- A function returning true or false 
+    iscakeavailable : INTEGER   -- A function returning true or false 
         do
             Result := numberofcakes /= 0
         end

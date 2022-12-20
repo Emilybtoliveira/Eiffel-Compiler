@@ -4,6 +4,19 @@ import string
 from typing import List
 import lexical_analyzer as lexical_analyzer
 
+
+SymbolTable = []
+linha = []
+@dataclass
+class Simbolo:
+    lexema:str
+    tipo:str
+    retornotipo:str
+    valor:int
+    escopo:None
+    idrec:int
+    body: str = ""
+
 # =========== ESTRUTURAS DA TABELA DE ANALISE =========================
 
 initial_non_terminal = "<class_declaration>"
@@ -332,18 +345,31 @@ def getFollowingTokens():
     #print(following_tokens)
     return following_tokens
 
+def checkIfExistsInSymbol(current_token):
+    global SymbolTable
+
+    for teste in SymbolTable:
+        return teste.lexema == current_token.lexeme
+
 def recursiveParser(current_parent_node):
+
+
     global current_token_index
+    global SymbolTable
     if current_token_index >= len(tokens):
         return()
 
-    #print(f"chamada para o nó {current_parent_node.parent_node.value}")    
 
     current_token = tokens[current_token_index]
-    #print(f"topo da pilha: {getTopStack()} topo da fita: {current_token.lexeme}")
 
     if current_token.lexeme_class == 'id':
         terminal = "<identifier>"
+        # if not checkIfExistsInSymbol(current_token):
+        #     # print(f"topo da pilha: {getTopStack()} topo da fita: {current_token.lexeme}")
+        #     print(f"chamada para o nó {current_parent_node.parent_node.value}") 
+        #     print(current_token)   
+        #     ds = Simbolo(current_token.lexeme,current_parent_node.parent_node.value,0,"global",0)
+        #     SymbolTable.append(ds)
     elif current_token.lexeme_class == 'int':
         terminal = "<integer>"
     else:
@@ -397,6 +423,7 @@ def recursiveParser(current_parent_node):
   
 def generateVisualDerivationTree(current_parent_node, depth):
     global tree
+    
 
     if depth == 1:
         tree = f"pai: {current_parent_node.parent_node.value}\n"
@@ -409,6 +436,7 @@ def generateVisualDerivationTree(current_parent_node, depth):
         
         for i in range(depth):
             tree += "    "
+
         tree += f"> {child.parent_node.value}\n"
 
         depth+=1
@@ -416,19 +444,95 @@ def generateVisualDerivationTree(current_parent_node, depth):
         depth-=1
 
 
+def getChilds(ent):
+    # vai printar todo mundo de um grupamento 
+    global linha    
+    for child in ent.children:
+        if child.children == [] and child.parent_node.value not in productions_table:
+            linha.append(child.parent_node.value+" ")
+        getChilds(child)
+        
+
+def symbolTableConstruct(current,scope,index):
+    global SymbolTable, linha
+    value = 0
+    retornotipo = ""
+    
+    for child in current.children:
+        
+        if(child.parent_node.value=="<feature_declaration>"):
+            identifier = child.children[0].children[0].children[0].parent_node.value
+            isProcedure = child.children[1].children[1].children == []
+            
+            if not isProcedure:
+                isVariable = child.children[1].children[2].children == []
+                typeId = child.children[1].children[1].children[-1].children[-1].parent_node.value
+
+                if typeId == "STRING":
+                    value = ""
+
+                if not isVariable:
+                    typeId = "method"
+                else:
+                    retornotipo = typeId
+                    typeId = "var"
+
+            else:
+                typeId = "procedure"
+
+            symbolDc = Simbolo(identifier,typeId,retornotipo,value,"global",0)
+            SymbolTable.append(symbolDc)
+            index = len(SymbolTable)-1
+            scope = identifier
+
+        elif child.parent_node.value=="<compound>" and child.children!=[]:
+            # teste = child.children[0].children[0].children[2]
+            compoundChild = child.children[0].children[0]
+            for x in range(len(compoundChild.children)):
+                getChilds(compoundChild.children[x])
+                
+            linhaJoin = "".join(linha)
+            # achar o symbol na tabela e jogar isso dentro do body de acordo com o escopo!
+            SymbolTable[index].body+=linhaJoin+'\n'
+            linha = []
+            
+            
+
+        elif child.parent_node.value=="<entity_declaration_list>":
+            idParam = child.children[0].children[0].children[0].children[0].parent_node.value
+            returnTypeParam = child.children[0].children[1].children[1].children[0].parent_node.value
+            typeParam = "param"
+            
+            if returnTypeParam == "STRING":
+                    value = ""
+
+            symbolDc = Simbolo(idParam,typeParam,returnTypeParam,value,scope,0)
+            SymbolTable.append(symbolDc)
+        symbolTableConstruct(child,scope,index)
+        
+            
 def main(tokens_list = None):
     if(tokens_list == None):
         tokens_list = lexical_analyzer.main()
 
     global tree
     global tokens
+    global SymbolTable
     tokens = tokens_list
+
 
     current_parent_node = derivation_tree.initial_node
     recursiveParser(current_parent_node)     
 
+    
     generateVisualDerivationTree(current_parent_node, 1)
     writeDerivationTree()
+
+    print()
+    symbolTableConstruct(current_parent_node,"global",1)
+
+    for x in SymbolTable:
+        print(x)
     print("Verifique o arquivo ./tree.txt para visualizar a árvore de derivação.")
       
 if __name__ == "__main__":

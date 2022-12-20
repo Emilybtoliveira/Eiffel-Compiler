@@ -1,0 +1,379 @@
+pai: <class_declaration>
+    |
+    –– > filho: <class_header>
+        |
+        –– > filho: class
+            |
+            –– > filho: class
+        |
+        –– > filho: <class_name>
+            |
+            –– > filho: <identifier>
+                |
+                –– > filho: BAKERY
+    |
+    –– > filho: <creation_instruction>
+    |
+    –– > filho: <features>
+        |
+        –– > filho: <feature_clause>
+            |
+            –– > filho: feature
+                |
+                –– > filho: feature
+            |
+            –– > filho: <feature_declaration_list>
+                |
+                –– > filho: <feature_declaration>
+                    |
+                    –– > filho: <feature_name>
+                        |
+                        –– > filho: <identifier>
+                            |
+                            –– > filho: numberofcakes
+                    |
+                    –– > filho: <declaration_body>
+                        |
+                        –– > filho: <formal_arguments>
+                        |
+                        –– > filho: <argument_type_mark>
+                            |
+                            –– > filho: :
+                                |
+                                –– > filho: :
+                            |
+                            –– > filho: <type>
+                                |
+                                –– > filho: INTEGER
+                                    |
+                                    –– > filho: INTEGER
+                        |
+                        –– > filho: <feature_value>
+                |
+                –– > filho: <feature_declaration_list>
+                    |
+                    –– > filho: <feature_declaration>
+                        |
+                        –– > filho: <feature_name>
+                            |
+                            –– > filho: <identifier>
+                                |
+                                –– > filho: newprice
+                        |
+                        –– > filho: <declaration_body>
+                            |
+                            –– > filho: <formal_arguments>
+                            |
+                            –– > filho: <argument_type_mark>
+                                |
+                                –– > filho: :
+                                    |
+                                    –– > filho: :
+                                |
+                                –– > filho: <type>
+                                    |
+                                    –– > filho: INTEGER
+                                        |
+                                        –– > filho: INTEGER
+                            |
+                            –– > filho: <feature_value>
+                    |
+                    –– > filho: <feature_declaration_list>
+                        |
+                        –– > filho: <feature_declaration>
+                            |
+                            –– > filho: <feature_name>
+                                |
+                                –– > filho: <identifier>
+                                    |
+                                    –– > filho: buycake
+                            |
+                            –– > filho: <declaration_body>
+                                |
+                                –– > filho: <formal_arguments>
+                                    |
+                                    –– > filho: (
+                                        |
+                                        –– > filho: (
+                                    |
+                                    –– > filho: <entity_declaration_list>
+                                        |
+                                        –– > filho: <entity_declaration_group>
+                                            |
+                                            –– > filho: <identifier_list>
+                                                |
+                                                –– > filho: <identifier>
+                                                    |
+                                                    –– > filho: amount
+                                            |
+                                            –– > filho: <type_mark>
+                                                |
+                                                –– > filho: :
+                                                    |
+                                                    –– > filho: :
+                                                |
+                                                –– > filho: <type>
+                                                    |
+                                                    –– > filho: INTEGER
+                                                        |
+                                                        –– > filho: INTEGER
+                                        |
+                                        –– > filho: <entity_declaration_list_e>
+                                            |
+                                            –– > filho: ,
+                                                |
+                                                –– > filho: ,
+                                            |
+                                            –– > filho: <entity_declaration_list>
+                                                |
+                                                –– > filho: <entity_declaration_group>
+                                                    |
+                                                    –– > filho: <identifier_list>
+                                                        |
+                                                        –– > filho: <identifier>
+                                                            |
+                                                            –– > filho: price
+                                                    |
+                                                    –– > filho: <type_mark>
+                                                        |
+                                                        –– > filho: :
+                                                            |
+                                                            –– > filho: :
+                                                        |
+                                                        –– > filho: <type>
+                                                            |
+                                                            –– > filho: INTEGER
+                                                                |
+                                                                –– > filho: INTEGER
+                                                |
+                                                –– > filho: <entity_declaration_list_e>
+                                    |
+                                    –– > filho: )
+                                        |
+                                        –– > filho: )
+                                |
+                                –– > filho: <argument_type_mark>
+                                |
+                                –– > filho: <feature_value>
+                                    |
+                                    –– > filho: <explicit_value>
+                                    |
+                                    –– > filho: <attribute_or_routine>
+                                        |
+                                        –– > filho: do
+                                            |
+                                            –– > filho: do
+                                        |
+                                        –– > filho: <compound>
+                                            |
+                                            –– > filho: <instruction>
+                                                |
+                                                –– > filho: <assigner_call>
+                                                    |
+                                                    –– > filho: <variable>
+                                                        |
+                                                        –– > filho: <identifier>
+                                                            |
+                                                            –– > filho: newprice
+                                                    |
+                                                    –– > filho: :=
+                                                        |
+                                                        –– > filho: :=
+                                                    |
+                                                    –– > filho: <expression>
+                                                        |
+                                                        –– > filho: <special_expression>
+                                                            |
+                                                            –– > filho: <manifest_constant>
+                                                                |
+                                                                –– > filho: <manifest_type>
+                                                                |
+                                                                –– > filho: <manifest_value>
+                                                                    |
+                                                                    –– > filho: <sign>
+                                                                    |
+                                                                    –– > filho: <integer>
+                                                                        |
+                                                                        –– > filho: 10
+                                            |
+                                            –– > filho: <compound>
+                                                |
+                                                –– > filho: <instruction>
+                                                    |
+                                                    –– > filho: <assigner_call>
+                                                        |
+                                                        –– > filho: <variable>
+                                                            |
+                                                            –– > filho: <identifier>
+                                                                |
+                                                                –– > filho: teste
+                                                        |
+                                                        –– > filho: :=
+                                                            |
+                                                            –– > filho: :=
+                                                        |
+                                                        –– > filho: <expression>
+                                                            |
+                                                            –– > filho: <special_expression>
+                                                                |
+                                                                –– > filho: <manifest_constant>
+                                                                    |
+                                                                    –– > filho: <manifest_type>
+                                                                    |
+                                                                    –– > filho: <manifest_value>
+                                                                        |
+                                                                        –– > filho: <sign>
+                                                                        |
+                                                                        –– > filho: <integer>
+                                                                            |
+                                                                            –– > filho: 12
+                                                |
+                                                –– > filho: <compound>
+                                                    |
+                                                    –– > filho: <instruction>
+                                                        |
+                                                        –– > filho: <assigner_call>
+                                                            |
+                                                            –– > filho: <variable>
+                                                                |
+                                                                –– > filho: <identifier>
+                                                                    |
+                                                                    –– > filho: Result
+                                                            |
+                                                            –– > filho: :=
+                                                                |
+                                                                –– > filho: :=
+                                                            |
+                                                            –– > filho: <expression>
+                                                                |
+                                                                –– > filho: <basic_expression>
+                                                                    |
+                                                                    –– > filho: <equality>
+                                                                        |
+                                                                        –– > filho: <variable>
+                                                                            |
+                                                                            –– > filho: <identifier>
+                                                                                |
+                                                                                –– > filho: amount
+                                                                        |
+                                                                        –– > filho: <comparison>
+                                                                            |
+                                                                            –– > filho: /=
+                                                                                |
+                                                                                –– > filho: /=
+                                                                        |
+                                                                        –– > filho: <expression>
+                                                                            |
+                                                                            –– > filho: <basic_expression>
+                                                                                |
+                                                                                –– > filho: <variable>
+                                                                                    |
+                                                                                    –– > filho: <identifier>
+                                                                                        |
+                                                                                        –– > filho: price
+                                                    |
+                                                    –– > filho: <compound>
+                                        |
+                                        –– > filho: end
+                                            |
+                                            –– > filho: end
+                        |
+                        –– > filho: <feature_declaration_list>
+                            |
+                            –– > filho: <feature_declaration>
+                                |
+                                –– > filho: <feature_name>
+                                    |
+                                    –– > filho: <identifier>
+                                        |
+                                        –– > filho: iscakeavailable
+                                |
+                                –– > filho: <declaration_body>
+                                    |
+                                    –– > filho: <formal_arguments>
+                                    |
+                                    –– > filho: <argument_type_mark>
+                                        |
+                                        –– > filho: :
+                                            |
+                                            –– > filho: :
+                                        |
+                                        –– > filho: <type>
+                                            |
+                                            –– > filho: INTEGER
+                                                |
+                                                –– > filho: INTEGER
+                                    |
+                                    –– > filho: <feature_value>
+                                        |
+                                        –– > filho: <explicit_value>
+                                        |
+                                        –– > filho: <attribute_or_routine>
+                                            |
+                                            –– > filho: do
+                                                |
+                                                –– > filho: do
+                                            |
+                                            –– > filho: <compound>
+                                                |
+                                                –– > filho: <instruction>
+                                                    |
+                                                    –– > filho: <assigner_call>
+                                                        |
+                                                        –– > filho: <variable>
+                                                            |
+                                                            –– > filho: <identifier>
+                                                                |
+                                                                –– > filho: Result
+                                                        |
+                                                        –– > filho: :=
+                                                            |
+                                                            –– > filho: :=
+                                                        |
+                                                        –– > filho: <expression>
+                                                            |
+                                                            –– > filho: <basic_expression>
+                                                                |
+                                                                –– > filho: <equality>
+                                                                    |
+                                                                    –– > filho: <variable>
+                                                                        |
+                                                                        –– > filho: <identifier>
+                                                                            |
+                                                                            –– > filho: numberofcakes
+                                                                    |
+                                                                    –– > filho: <comparison>
+                                                                        |
+                                                                        –– > filho: /=
+                                                                            |
+                                                                            –– > filho: /=
+                                                                    |
+                                                                    –– > filho: <expression>
+                                                                        |
+                                                                        –– > filho: <special_expression>
+                                                                            |
+                                                                            –– > filho: <manifest_constant>
+                                                                                |
+                                                                                –– > filho: <manifest_type>
+                                                                                |
+                                                                                –– > filho: <manifest_value>
+                                                                                    |
+                                                                                    –– > filho: <sign>
+                                                                                    |
+                                                                                    –– > filho: <integer>
+                                                                                        |
+                                                                                        –– > filho: 0
+                                                |
+                                                –– > filho: <compound>
+                                            |
+                                            –– > filho: end
+                                                |
+                                                –– > filho: end
+                            |
+                            –– > filho: <feature_declaration_list>
+        |
+        –– > filho: <features>
+    |
+    –– > filho: end
+        |
+        –– > filho: end
