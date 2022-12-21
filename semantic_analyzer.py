@@ -13,6 +13,18 @@ class Node:
     leaf: bool = True
 
 
+def printTable(table: dict[Simbolo]):
+    print("\n--------------------------------------------------------------------------")
+    print("|       lexema       |   tipo   | tipoDeRetorno | valor | escopo | idRec |")
+
+    for key, simbolo in table.items():
+        print("--------------------------------------------------------------------------")
+        print(
+            f"|{str(simbolo.lexema).center(20)}|{str(simbolo.tipo).center(10)}|{str(simbolo.retornotipo).center(15)}|{str(simbolo.valor).center(7)}|{str(simbolo.escopo).center(8)}|{str(simbolo.idrec).center(7)}|")
+
+    print("--------------------------------------------------------------------------")
+
+
 def generateTreeString(node: Node, depth: int):
     nodeStr = ""
     if (depth != 0):
@@ -98,14 +110,14 @@ def handleExpression(line: str, tokensList: list[Token], table: dict[Simbolo]):
 
     expressionRoot = expressionParser(value, tokensList)
     textTree = generateTreeString(expressionRoot, 0)
-    print(textTree)
+    #print(textTree)
 
     valueTest = value.replace("/=", "!=")
     for tN, token in table.items():
         valueTest = valueTest.replace(tN, str(token.valor))
     if (target.lexeme not in table.keys()):
         table[target.lexeme] = Simbolo(
-            target, "var", "INTEGER", int(eval(valueTest)), "Local", 0)
+            target.lexeme, "var", "INTEGER", int(eval(valueTest)), "local", 0)
     else:
         table[target.lexeme].valor = int(eval(valueTest))
 
@@ -120,7 +132,7 @@ def handleAttribution(line: str, tokensList: list[Token], table):
     for tN, token in table.items():
         valueTest.replace(tN, token.valor)
     table[target] = Simbolo(target, "var", "INTEGER",
-                            int(eval(valueTest)), "Local")
+                            int(eval(valueTest)), "local")
     return table
 
 
@@ -165,7 +177,7 @@ def main():
     methods = {}
     params = {}
 
-    entryTable: list[Simbolo] = syntax()
+    entryTable: list[Simbolo] = syntax(show=False)
     gTable = dict()
 
     for simbolo in entryTable:
@@ -193,10 +205,9 @@ def main():
             lTable[param.lexema] = Simbolo(param.lexema, param.tipo, param.retornotipo,
                                            request(param), "local", 0)
         print("\n#############################################\n")
-        for lex, simbolo in lTable.items():
-            print(simbolo)
-        print("---------------------------------------------\n")
-        for line in proc.body.split("\n"):
+        print(f"\n>>>> {proc.name}'s local table\n")
+        printTable(lTable)
+        for line in list(filter(lambda line: line != "", proc.body.split("\n"))):
             classToTokens, tokenToClass, tokensList = parseLine(line)
             print()
             if ":=" in classToTokens.get("opr", []):
@@ -206,18 +217,20 @@ def main():
                 lTable = handleAttribution(line, tokensList, lTable)
                 print("(Variable Declaration)")
             print(line, "\n")
-            for lex, simbolo in lTable.items():
-                print(simbolo)
-            print("\n\n")
+            printTable(lTable)
+            print("\n")
 
         if (lTable.get("Result", None) != None):
             print("\nReturning value ", lTable["Result"].valor)
-        print("\n\n")
-        for lex, simbolo in lTable.items():
-            print(simbolo)
+        print("\n")
 
         for lexame, simbolo in gTable.items():
-            gTable[lexame] = lTable[lexame]
+            if (lTable[lexame].escopo == "global"):
+                gTable[lexame] = lTable[lexame]
+        print("\n#############################################\n")
+        print(f"Execução de {proc.name} resultou na tabela global:")
+        printTable(gTable)
+        print()
 
 
 if __name__ == "__main__":

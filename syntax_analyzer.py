@@ -531,7 +531,7 @@ def symbolTableConstruct(current, scope, index):
         symbolTableConstruct(child, scope, index)
 
 
-def main(tokens_list=None):
+def main(tokens_list=None, show=True):
     if (tokens_list == None):
         tokens_list = lexical_analyzer.main()
 
@@ -546,12 +546,13 @@ def main(tokens_list=None):
     generateVisualDerivationTree(current_parent_node, 1)
     writeDerivationTree()
 
-    print()
     symbolTableConstruct(current_parent_node, "global", 1)
 
-    for x in SymbolTable:
-        print(x)
-    print("Verifique o arquivo ./tree.txt para visualizar a árvore de derivação.")
+    if (show):
+        print()
+        for x in SymbolTable:
+            print(x)
+        print("Verifique o arquivo ./tree.txt para visualizar a árvore de derivação.")
     return SymbolTable
 
 
